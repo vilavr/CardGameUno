@@ -1,0 +1,29 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleApp", "ConsoleApp\ConsoleApp.csproj", "{B33C4C1F-69DE-470B-B70E-1354537749CB}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "!Solution Items", "!Solution Items", "{61C81FCF-E3FB-45D8-9283-3E569F560C08}"
+	ProjectSection(SolutionItems) = preProject
+		..\README.md = ..\README.md
+		..\..\cardgameuno1\.gitignore = ..\..\cardgameuno1\.gitignore
+		..\Directory.Build.props = ..\Directory.Build.props
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MenuSystem", "MenuSystem\MenuSystem.csproj", "{7454B0E7-C356-4D42-80FB-A068C3ED53A5}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B33C4C1F-69DE-470B-B70E-1354537749CB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B33C4C1F-69DE-470B-B70E-1354537749CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B33C4C1F-69DE-470B-B70E-1354537749CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B33C4C1F-69DE-470B-B70E-1354537749CB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7454B0E7-C356-4D42-80FB-A068C3ED53A5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7454B0E7-C356-4D42-80FB-A068C3ED53A5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7454B0E7-C356-4D42-80FB-A068C3ED53A5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7454B0E7-C356-4D42-80FB-A068C3ED53A5}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,12 @@
+/home/viralavrova/cardgameuno/Uno/MenuSystem/bin/Debug/net7.0/MenuSystem.deps.json
+/home/viralavrova/cardgameuno/Uno/MenuSystem/bin/Debug/net7.0/MenuSystem.dll
+/home/viralavrova/cardgameuno/Uno/MenuSystem/bin/Debug/net7.0/MenuSystem.pdb
+/home/viralavrova/cardgameuno/Uno/MenuSystem/obj/Debug/net7.0/MenuSystem.csproj.AssemblyReference.cache
+/home/viralavrova/cardgameuno/Uno/MenuSystem/obj/Debug/net7.0/MenuSystem.GeneratedMSBuildEditorConfig.editorconfig
+/home/viralavrova/cardgameuno/Uno/MenuSystem/obj/Debug/net7.0/MenuSystem.AssemblyInfoInputs.cache
+/home/viralavrova/cardgameuno/Uno/MenuSystem/obj/Debug/net7.0/MenuSystem.AssemblyInfo.cs
+/home/viralavrova/cardgameuno/Uno/MenuSystem/obj/Debug/net7.0/MenuSystem.csproj.CoreCompileInputs.cache
+/home/viralavrova/cardgameuno/Uno/MenuSystem/obj/Debug/net7.0/MenuSystem.dll
+/home/viralavrova/cardgameuno/Uno/MenuSystem/obj/Debug/net7.0/refint/MenuSystem.dll
+/home/viralavrova/cardgameuno/Uno/MenuSystem/obj/Debug/net7.0/MenuSystem.pdb
+/home/viralavrova/cardgameuno/Uno/MenuSystem/obj/Debug/net7.0/ref/MenuSystem.dll
