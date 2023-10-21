@@ -11,23 +11,28 @@ public class Menu
     private static readonly string[] ReservedShortcutsSecond = new[] { "x", "b" };
     private static readonly string[] ReservedShortcutsThird = new[] { "x", "b", "m" };
     private string[] ReservedShortcuts;
-    public bool ShouldReturnToMain { get; private set; } = false;
-    public Menu(string? title, List<MenuItem> menuItems, EMenuLevel menuLevel = EMenuLevel.First)
+    public void RefreshAvailableShortcuts()
     {
-        Title = title;
-        MenuLevel = menuLevel; 
-         switch (MenuLevel)
+        switch (MenuLevel)
         {
+            case EMenuLevel.First:
+                ReservedShortcuts = ReservedShortcutsFirst;
+                break;
             case EMenuLevel.Second:
                 ReservedShortcuts = ReservedShortcutsSecond;
                 break;
             case EMenuLevel.Other:
                 ReservedShortcuts = ReservedShortcutsThird;
                 break;
-            default:
-                ReservedShortcuts = ReservedShortcutsFirst;
-                break;
         }
+    }
+    public bool ShouldReturnToMain { get; private set; } = false;
+    public Menu(string? title, List<MenuItem> menuItems, EMenuLevel menuLevel = EMenuLevel.First)
+    {
+        Title = title;
+        MenuLevel = menuLevel; 
+        ReservedShortcuts = ReservedShortcutsFirst;
+        RefreshAvailableShortcuts();
         foreach (var menuItem in menuItems)
         {
             if (ReservedShortcuts.Contains(menuItem.Shortcut.ToLower()))
@@ -42,6 +47,7 @@ public class Menu
     {
         Console.WriteLine(Title);
         Console.WriteLine(Separator);
+        RefreshAvailableShortcuts();
         foreach (var menuItem in MenuItems.Values)
         {
             Console.Write(menuItem.Shortcut);

@@ -11,9 +11,7 @@ public class MenuController
         string? choice;
         do
         {
-            choice = menu.Run();  // This will display the menu and wait for user input
-
-            // Check if the user wants to go back or return to main
+            choice = menu.Run(); 
             if (choice == "b" && MenuHistory.Count > 1)
             {
                 MenuHistory.Pop();  // Remove the current menu from the stack
@@ -26,11 +24,8 @@ public class MenuController
                 {
                     MenuHistory.Pop();
                 }
-                // Display the main menu
                 DisplayMenu(MenuHistory.Peek());
             }
-        } while (choice != "x");  // Continue until the user wants to exit
-
-        // Handle exiting the application if needed
+        } while (choice != "x");  
     }
 }
