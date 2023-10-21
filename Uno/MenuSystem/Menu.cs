@@ -4,13 +4,30 @@ public class Menu
 {
     public string Title { get; set; } = default!;
     public Dictionary<string, MenuItem> MenuItems { get; set; } = new Dictionary<string, MenuItem>();
-
+    public EMenuLevel MenuLevel { get; set; }
+    
     private string Separator = "============================";
-    private static readonly string[] ReservedShortcuts = new[] { "x", "b" };
-
-    public Menu(string? title, List<MenuItem> menuItems)
+    private static readonly string[] ReservedShortcutsFirst = new[] { "x" };
+    private static readonly string[] ReservedShortcutsSecond = new[] { "x", "b" };
+    private static readonly string[] ReservedShortcutsThird = new[] { "x", "b", "m" };
+    private string[] ReservedShortcuts;
+    public bool ShouldReturnToMain { get; private set; } = false;
+    public Menu(string? title, List<MenuItem> menuItems, EMenuLevel menuLevel = EMenuLevel.First)
     {
         Title = title;
+        MenuLevel = menuLevel; 
+         switch (MenuLevel)
+        {
+            case EMenuLevel.Second:
+                ReservedShortcuts = ReservedShortcutsSecond;
+                break;
+            case EMenuLevel.Other:
+                ReservedShortcuts = ReservedShortcutsThird;
+                break;
+            default:
+                ReservedShortcuts = ReservedShortcutsFirst;
+                break;
+        }
         foreach (var menuItem in menuItems)
         {
             if (ReservedShortcuts.Contains(menuItem.Shortcut.ToLower()))
@@ -31,8 +48,16 @@ public class Menu
             Console.Write(") ");
             Console.WriteLine(menuItem.MenuLabel);
         }
-        
-        Console.WriteLine("b) Back");
+
+        if (MenuLevel != EMenuLevel.First)
+        { 
+            Console.WriteLine("b) Back");
+            if (MenuLevel != EMenuLevel.Second)
+            {
+                Console.WriteLine("m) Return to main");
+            }
+        }
+
         Console.WriteLine("x) Exit");
         
         Console.WriteLine(Separator);
@@ -40,33 +65,54 @@ public class Menu
     }
 
     public string? Run()
+{
+    var userChoice = "";
+    do
     {
-        var userChoice = "";
-        do
+        Console.Clear(); 
+        Draw(); 
+        userChoice = Console.ReadLine()?.Trim().ToLower() ?? "";
+        if (MenuItems.ContainsKey(userChoice))
         {
-            Console.Clear();
-            Draw();
-            userChoice = Console.ReadLine()?.Trim();
-
-            if (MenuItems.ContainsKey(userChoice?.ToLower()))
+            var selectedMenuItem = MenuItems[userChoice];
+            if (selectedMenuItem.MethodToRun != null)
             {
-                if (MenuItems[userChoice!.ToLower()].MethodToRun != null)
+                var result = selectedMenuItem.MethodToRun();
+                if (result?.ToLower() == "x")
                 {
-                    var result = MenuItems[userChoice.ToLower()].MethodToRun!();
-                    if (result?.ToLower() == "x")
-                    {
-                        userChoice = "x";
-                    }
+                    return "x"; 
                 }
-                
+                else if (result?.ToLower() == "m")  
+                {
+                    return "m"; 
+                }
             }
-            else if (!ReservedShortcuts.Contains(userChoice?.ToLower()))
+        }
+        else if (userChoice == "b")  // User wants to go back one level
+        {
+            if (MenuLevel != EMenuLevel.First)
             {
-                Console.WriteLine("Unsupported shortcut");
+                return "b"; 
             }
-            Console.WriteLine();
-        } while (!ReservedShortcuts.Contains(userChoice));
-        
-        return userChoice;
-    }
+        }
+        else if (userChoice == "m")  // User wants to jump back to the main menu
+        {
+            if (MenuLevel != EMenuLevel.First)
+            {
+                return "m"; 
+            }
+        }
+        else if (userChoice == "x")  // User wants to exit the application
+        {
+            return "x";
+        }
+        else  // The choice did not match any item or reserved shortcut
+        {
+            Console.WriteLine("Unsupported shortcut. Press any key to try again.");
+            Console.ReadKey();
+        }
+
+    } while (true); 
+}
+
 }
