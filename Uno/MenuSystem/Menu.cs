@@ -6,14 +6,14 @@ public class Menu
     public Dictionary<string, MenuItem> MenuItems { get; set; } = new Dictionary<string, MenuItem>();
 
     private string Separator = "============================";
-    private static readonly string[] ForbiddenShortcuts = new[] { "x", "b" };
+    private static readonly string[] ReservedShortcuts = new[] { "x", "b" };
 
     public Menu(string? title, List<MenuItem> menuItems)
     {
         Title = title;
         foreach (var menuItem in menuItems)
         {
-            if (ForbiddenShortcuts.Contains(menuItem.Shortcut.ToLower()))
+            if (ReservedShortcuts.Contains(menuItem.Shortcut.ToLower()))
             {
                 throw new Exception(message: $"The shortcut '{menuItem.Shortcut.ToLower()}' is not allowed!");
             }
@@ -31,13 +31,42 @@ public class Menu
             Console.Write(") ");
             Console.WriteLine(menuItem.MenuLabel);
         }
+        
+        Console.WriteLine("b) Back");
+        Console.WriteLine("x) Exit");
+        
         Console.WriteLine(Separator);
         Console.Write("Your choice: ");
     }
 
-    public string Run()
+    public string? Run()
     {
-        Draw();
-        return "x";
+        var userChoice = "";
+        do
+        {
+            Console.Clear();
+            Draw();
+            userChoice = Console.ReadLine()?.Trim();
+
+            if (MenuItems.ContainsKey(userChoice?.ToLower()))
+            {
+                if (MenuItems[userChoice!.ToLower()].MethodToRun != null)
+                {
+                    var result = MenuItems[userChoice.ToLower()].MethodToRun!();
+                    if (result?.ToLower() == "x")
+                    {
+                        userChoice = "x";
+                    }
+                }
+                
+            }
+            else if (!ReservedShortcuts.Contains(userChoice?.ToLower()))
+            {
+                Console.WriteLine("Unsupported shortcut");
+            }
+            Console.WriteLine();
+        } while (!ReservedShortcuts.Contains(userChoice));
+        
+        return userChoice;
     }
 }
