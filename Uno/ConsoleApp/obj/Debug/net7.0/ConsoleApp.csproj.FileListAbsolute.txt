@@ -16,3 +16,4 @@
 /home/viralavrova/cardgameuno/Uno/ConsoleApp/obj/Debug/net7.0/ConsoleApp.pdb
 /home/viralavrova/cardgameuno/Uno/ConsoleApp/obj/Debug/net7.0/ConsoleApp.genruntimeconfig.cache
 /home/viralavrova/cardgameuno/Uno/ConsoleApp/obj/Debug/net7.0/ref/ConsoleApp.dll
+/home/viralavrova/cardgameuno/Uno/ConsoleApp/bin/Debug/net7.0/Newtonsoft.Json.dll
