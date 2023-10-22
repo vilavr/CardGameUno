@@ -1,58 +1,61 @@
 ﻿using MenuSystem;
-var submenu3 = new Menu(title:"submenu3", new List<MenuItem>()
+var choiceOfSettingToCustomise = new Menu(title:"Choose what setting you'd like to customize", new List<MenuItem>()
 {
     new MenuItem()
     {
         Shortcut = "1",
-        MenuLabel = "Start game",
+        MenuLabel = "Setting 1",
     },
     new MenuItem()
     {
         Shortcut = "2",
-        MenuLabel = "Settings"
+        MenuLabel = "Setting 2"
     },
     new MenuItem()
     {
-        Shortcut = "3",
-        MenuLabel = "Load game"
+        Shortcut = "f",
+        MenuLabel = "Finish customisation"
     }
 }, EMenuLevel.Other);
-var submenu2 = new Menu(title:"submenu2", new List<MenuItem>()
+var whatToDoWithSettings = new Menu(title:"Choose what you want to do with these settings", new List<MenuItem>()
 {
     new MenuItem()
     {
         Shortcut = "1",
-        MenuLabel = "Start game",
+        MenuLabel = "Use only for this game (without saving)",
+        MethodToRun = choiceOfSettingToCustomise.Run,
     },
     new MenuItem()
     {
         Shortcut = "2",
-        MenuLabel = "Settings"
+        MenuLabel = "Use for this game and save into file",
+        MethodToRun = choiceOfSettingToCustomise.Run,
     },
     new MenuItem()
     {
         Shortcut = "3",
-        MenuLabel = "Load game",
-        MethodToRun = submenu3.Run
+        MenuLabel = "Use for this game and set as default for further games",
+        MethodToRun = choiceOfSettingToCustomise.Run,
     }
 }, EMenuLevel.Other);
-var submenu1 = new Menu(title:"submenu1", new List<MenuItem>()
+var settingsChoice = new Menu(title:"Choose what settings you want to continue with", new List<MenuItem>()
 {
     new MenuItem()
     {
         Shortcut = "1",
-        MenuLabel = "Start game",
+        MenuLabel = "Default settings",
     },
     new MenuItem()
     {
         Shortcut = "2",
-        MenuLabel = "Settings",
-        MethodToRun = submenu2.Run,
+        MenuLabel = "Customise settings",
+        MethodToRun = whatToDoWithSettings.Run,
     },
+    
     new MenuItem()
     {
         Shortcut = "3",
-        MenuLabel = "Load game"
+        MenuLabel = "Use pre-saved settings"
     }
 }, EMenuLevel.Second);
 var mainMenu = new Menu(title:"Main menu", new List<MenuItem>()
@@ -61,12 +64,13 @@ var mainMenu = new Menu(title:"Main menu", new List<MenuItem>()
     {
         Shortcut = "1",
         MenuLabel = "Start game",
-        MethodToRun = submenu1.Run,
+        MethodToRun = settingsChoice.Run,
     },
     new MenuItem()
     {
         Shortcut = "2",
-        MenuLabel = "Settings"
+        MenuLabel = "Settings",
+        MethodToRun = whatToDoWithSettings.Run,
     },
     new MenuItem()
     {

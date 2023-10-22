@@ -60,7 +60,7 @@ public class Menu
             Console.WriteLine("b) Back");
             if (MenuLevel != EMenuLevel.Second)
             {
-                Console.WriteLine("m) Return to main");
+                Console.WriteLine("m) Return to main menu");
             }
         }
 
