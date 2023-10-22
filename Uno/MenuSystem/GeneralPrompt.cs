@@ -1,13 +1,12 @@
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace MenuSystem;
-    public class Prompt<T>
+    public class GeneralPrompt<T>
     {
         public string Question { get; }
         public List<T> AllowedValues { get; }
 
-        public Prompt(string question, List<T> allowedValues)
+        public GeneralPrompt(string question, List<T> allowedValues)
         {
             Question = question;
             AllowedValues = allowedValues;
@@ -15,7 +14,7 @@ namespace MenuSystem;
 
         public T GetUserInput()
         {
-            T? userInput = default(T); 
+            T? userInput; 
             while (true)
             {
                 Console.WriteLine(Question);
@@ -71,7 +70,7 @@ namespace MenuSystem;
                 }
                 else if (i == keyParts.Length - 1)
                 {
-                    JToken valueToReplace = JToken.FromObject(value);
+                    JToken valueToReplace = JToken.FromObject(value!);
                     currentToken[keyParts[i]]?.Replace(valueToReplace);
                 }
                 else
