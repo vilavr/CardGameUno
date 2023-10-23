@@ -96,27 +96,6 @@ var kindofSettingsToCustomize = new Menu(title:"Choose what category of settings
     }
 }, EMenuLevel.Other);
 
-var whatToDoWithSettings = new Menu(title:"Choose what you want to do with these settings", new List<MenuItem>()
-{
-    new MenuItem()
-    {
-        Shortcut = "1",
-        MenuLabel = "Use only for this game (without saving)",
-        MethodToRun = kindofSettingsToCustomize.Run,
-    },
-    new MenuItem()
-    {
-        Shortcut = "2",
-        MenuLabel = "Use for this game and save into file",
-        MethodToRun = kindofSettingsToCustomize.Run,
-    },
-    new MenuItem()
-    {
-        Shortcut = "3",
-        MenuLabel = "Use for this game and set as default for further games",
-        MethodToRun = kindofSettingsToCustomize.Run,
-    }
-}, EMenuLevel.Other);
 var settingsChoice = new Menu(title:"Choose what settings you want to continue with", new List<MenuItem>()
 {
     new MenuItem()
@@ -128,7 +107,7 @@ var settingsChoice = new Menu(title:"Choose what settings you want to continue w
     {
         Shortcut = "2",
         MenuLabel = "Customise settings",
-        MethodToRun = whatToDoWithSettings.Run,
+        MethodToRun = kindofSettingsToCustomize.Run,
     },
     
     new MenuItem()
@@ -149,7 +128,7 @@ var mainMenu = new Menu(title:"Main menu", new List<MenuItem>()
     {
         Shortcut = "2",
         MenuLabel = "Settings",
-        MethodToRun = whatToDoWithSettings.Run,
+        MethodToRun = kindofSettingsToCustomize.Run,
     },
     new MenuItem()
     {
