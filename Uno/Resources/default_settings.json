@@ -59,7 +59,5 @@
     "NumberOfDecks": 1,
     "WinningScore": 500,
     "PlayDirection": "counterclockwise"
-  },
-  "cardSettings.Red_0": 3,
-  "cardSettings.Red_1": 2
+  }
 }

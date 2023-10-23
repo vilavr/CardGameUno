@@ -133,75 +133,92 @@ namespace MenuSystem
             return cardName;
         }
 
-         public void UpdateCardQuantity(string inputFileName = "default_settings.json")
-    {
-        // Absolute path to the Resources directory
-        string resourcesDirectory = "/home/viralavrova/cardgameuno/Uno/Resources";
-
-        // Asking for a custom file name from the user
-        Console.WriteLine("If you want to use a custom settings file, please enter the file name (otherwise, press Enter to continue):");
-        string userInputFileName = Console.ReadLine()?.Trim() ?? string.Empty;
-
-        // Determine whether to use the default file name or the user-provided one
-        string targetFileName = string.IsNullOrEmpty(userInputFileName) ? inputFileName : userInputFileName;
-
-        // Check if the file name ends with '.json', if not, append it
-        if (!targetFileName.EndsWith(".json", StringComparison.OrdinalIgnoreCase))
+        public void UpdateCardQuantity(string inputFileName = "default_settings.json")
         {
-            targetFileName += ".json";
-        }
+            // Absolute path to the Resources directory
+            string resourcesDirectory = "/home/viralavrova/cardgameuno/Uno/Resources";
 
-        // Construct the full path to the target file
-        string targetFilePath = Path.Combine(resourcesDirectory, targetFileName);
+            // Asking for a custom file name from the user
+            Console.WriteLine(
+                "If you want to use a custom settings file, please enter the file name (otherwise, press Enter to continue):");
+            string userInputFileName = Console.ReadLine()?.Trim() ?? string.Empty;
 
-        // If the target file doesn't exist, create it and copy the contents from the default file
-        if (!File.Exists(targetFilePath))
-        {
-            // Use the default settings file as a template
-            string defaultFilePath = Path.Combine(resourcesDirectory, "default_settings.json");
-            if (File.Exists(defaultFilePath))
+            // Determine whether to use the default file name or the user-provided one
+            string targetFileName = string.IsNullOrEmpty(userInputFileName) ? inputFileName : userInputFileName;
+
+            // Check if the file name ends with '.json', if not, append it
+            if (!targetFileName.EndsWith(".json", StringComparison.OrdinalIgnoreCase))
             {
-                File.Copy(defaultFilePath, targetFilePath);
-                Console.WriteLine($"A new settings file has been created based on the default settings: {targetFileName}");
+                targetFileName += ".json";
             }
-            else
+
+            // Construct the full path to the target file
+            string targetFilePath = Path.Combine(resourcesDirectory, targetFileName);
+
+            // If the target file doesn't exist, create it and copy the contents from the default file
+            if (!File.Exists(targetFilePath))
             {
-                Console.WriteLine($"Error: Default settings file not found: {defaultFilePath}");
-                return;
+                // Use the default settings file as a template
+                string defaultFilePath = Path.Combine(resourcesDirectory, "default_settings.json");
+                if (File.Exists(defaultFilePath))
+                {
+                    File.Copy(defaultFilePath, targetFilePath);
+                    Console.WriteLine(
+                        $"A new settings file has been created based on the default settings: {targetFileName}");
+                }
+                else
+                {
+                    Console.WriteLine($"Error: Default settings file not found: {defaultFilePath}");
+                    return;
+                }
             }
+
+            // Load the settings from the target file
+            _filePath = targetFilePath;
+            string jsonData = File.ReadAllText(_filePath);
+            _settings = JObject.Parse(jsonData);
+
+            // Loop for multiple updates
+            while (true)
+            {
+                Console.WriteLine("\nEnter the card update command (e.g., 'Red 0 +2') or press 'f' to finish:");
+                string? input = Console.ReadLine();
+
+                if (input?.Trim().ToLower() == "f")
+                {
+                    break; // Exit the loop if the user wants to finish
+                }
+
+                var validationResult = ValidateAndNormalizeInput(input);
+                if (validationResult == null)
+                {
+                    Console.WriteLine(
+                        "Invalid command or card name, or the quantity was out of range. Please try again.");
+                    continue;
+                }
+
+                var (cardName, newQuantity, currentQuantity) = validationResult.Value;
+
+                // Inside your loop where you update each card, replace the updating section with this:
+
+                if (newQuantity == currentQuantity)
+                {
+                    Console.WriteLine($"Quantity of '{cardName.Replace("_", " ")}' cards is already {currentQuantity}. No changes were made.");
+                }
+                else
+                {
+                    // Navigate to the nested card settings and update the value there.
+                    JObject cardSettings = (JObject)_settings["cardSettings"]!; // Access the 'cardSettings' object.
+                    cardSettings[cardName] = newQuantity;  // Directly update the value inside the nested structure.
+                    Console.WriteLine($"Updated quantity of '{cardName.Replace("_", " ")}' cards to: {newQuantity}");
+                }
+
+            }
+
+            // After all changes, save the updated settings back to the file
+            File.WriteAllText(_filePath, _settings.ToString());
+            Console.WriteLine("\nAll changes saved successfully.");
         }
 
-        // Load the settings from the target file
-        _filePath = targetFilePath;
-        string jsonData = File.ReadAllText(_filePath);
-        _settings = JObject.Parse(jsonData);
-        
-        Console.WriteLine("Enter the card update command (e.g., 'Red 0 +2'):");
-        string? input = Console.ReadLine();
-        
-        var validationResult = ValidateAndNormalizeInput(input);
-        if (validationResult == null)
-        {
-            Console.WriteLine("Invalid command or card name, or the quantity was out of range.");
-            return;
-        }
-
-        var (cardName, newQuantity, currentQuantity) = validationResult.Value;
-
-        if (newQuantity == currentQuantity)
-        {
-            Console.WriteLine($"Quantity of '{cardName.Replace("_", " ")}' cards is already {currentQuantity}. No changes were made.");
-            return;
-        }
-
-        // Update the quantity in the settings
-        string jsonKey = "cardSettings." + cardName;
-        _settings[jsonKey] = newQuantity;
-
-        // Save the updated settings back to the file
-        File.WriteAllText(_filePath, _settings.ToString());
-
-        Console.WriteLine($"Updated quantity of '{cardName.Replace("_", " ")}' cards in '{targetFileName}' to: {newQuantity}");
-    }
     }
 }
