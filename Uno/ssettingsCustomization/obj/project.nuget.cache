@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "/Dsl9Bb8ZV2Y3VUFYZIUTSx8GspHQdbgWExa3SF8a+WuQez1xsq0ZweRuV0gu9qnkfGpnGcFJqBZ5dLd/vBYTA==",
+  "success": true,
+  "projectFilePath": "/home/viralavrova/cardgameuno/Uno/ssettingsCustomization/ssettingsCustomization.csproj",
+  "expectedPackageFiles": [
+    "/home/viralavrova/.nuget/packages/newtonsoft.json/13.0.3/newtonsoft.json.13.0.3.nupkg.sha512"
+  ],
+  "logs": []
+}

@@ -2,15 +2,33 @@ namespace MenuSystem;
 
 public class Menu
 {
-    public string Title { get; set; } = default!;
-    public Dictionary<string, MenuItem> MenuItems { get; set; } = new Dictionary<string, MenuItem>();
-    public EMenuLevel MenuLevel { get; set; }
-    
-    private string Separator = "============================";
-    private static readonly string[] ReservedShortcutsFirst = new[] { "x" };
-    private static readonly string[] ReservedShortcutsSecond = new[] { "x", "b" };
-    private static readonly string[] ReservedShortcutsThird = new[] { "x", "b", "m" };
+    private static readonly string[] ReservedShortcutsFirst = { "x" };
+    private static readonly string[] ReservedShortcutsSecond = { "x", "b" };
+    private static readonly string[] ReservedShortcutsThird = { "x", "b", "m" };
     private string[] ReservedShortcuts;
+
+    private readonly string Separator = "============================";
+
+    public Menu(string? title, List<MenuItem> menuItems, EMenuLevel menuLevel = EMenuLevel.First)
+    {
+        Title = title;
+        MenuLevel = menuLevel;
+        ReservedShortcuts = ReservedShortcutsFirst;
+        RefreshAvailableShortcuts();
+        foreach (var menuItem in menuItems)
+        {
+            if (ReservedShortcuts.Contains(menuItem.Shortcut.ToLower()))
+                throw new Exception($"The shortcut '{menuItem.Shortcut.ToLower()}' is not allowed!");
+
+            MenuItems[menuItem.Shortcut] = menuItem;
+        }
+    }
+
+    public string Title { get; set; } = default!;
+    public Dictionary<string, MenuItem> MenuItems { get; set; } = new();
+    public EMenuLevel MenuLevel { get; set; }
+    public bool ShouldReturnToMain { get; private set; } = false;
+
     public void RefreshAvailableShortcuts()
     {
         switch (MenuLevel)
@@ -26,23 +44,7 @@ public class Menu
                 break;
         }
     }
-    public bool ShouldReturnToMain { get; private set; } = false;
-    public Menu(string? title, List<MenuItem> menuItems, EMenuLevel menuLevel = EMenuLevel.First)
-    {
-        Title = title;
-        MenuLevel = menuLevel; 
-        ReservedShortcuts = ReservedShortcutsFirst;
-        RefreshAvailableShortcuts();
-        foreach (var menuItem in menuItems)
-        {
-            if (ReservedShortcuts.Contains(menuItem.Shortcut.ToLower()))
-            {
-                throw new Exception(message: $"The shortcut '{menuItem.Shortcut.ToLower()}' is not allowed!");
-            }
 
-            MenuItems[menuItem.Shortcut] = menuItem;
-        }
-    }
     private void Draw()
     {
         Console.WriteLine(Title);
@@ -56,69 +58,53 @@ public class Menu
         }
 
         if (MenuLevel != EMenuLevel.First)
-        { 
+        {
             Console.WriteLine("b) Back");
-            if (MenuLevel != EMenuLevel.Second)
-            {
-                Console.WriteLine("m) Return to main menu");
-            }
+            if (MenuLevel != EMenuLevel.Second) Console.WriteLine("m) Return to main menu");
         }
 
         Console.WriteLine("x) Exit");
-        
+
         Console.WriteLine(Separator);
         Console.Write("Your choice: ");
     }
 
     public string? Run()
-{
-    var userChoice = "";
-    do
     {
-        Console.Clear(); 
-        Draw(); 
-        userChoice = Console.ReadLine()?.Trim().ToLower() ?? "";
-        if (MenuItems.ContainsKey(userChoice))
+        var userChoice = "";
+        do
         {
-            var selectedMenuItem = MenuItems[userChoice];
-            if (selectedMenuItem.MethodToRun != null)
+            Console.Clear();
+            Draw();
+            userChoice = Console.ReadLine()?.Trim().ToLower() ?? "";
+            if (MenuItems.ContainsKey(userChoice))
             {
-                var result = selectedMenuItem.MethodToRun();
-                if (result?.ToLower() == "x")
+                var selectedMenuItem = MenuItems[userChoice];
+                if (selectedMenuItem.MethodToRun != null)
                 {
-                    return "x"; 
+                    var result = selectedMenuItem.MethodToRun();
+                    if (result?.ToLower() == "x")
+                        return "x";
+                    if (result?.ToLower() == "m") return "m";
                 }
-                else if (result?.ToLower() == "m")  
-                {
-                    return "m"; 
-                }
             }
-        }
-        else if (userChoice == "b")  // User wants to go back one level
-        {
-            if (MenuLevel != EMenuLevel.First)
+            else if (userChoice == "b") // User wants to go back one level
             {
-                return "b"; 
+                if (MenuLevel != EMenuLevel.First) return "b";
             }
-        }
-        else if (userChoice == "m")  // User wants to jump back to the main menu
-        {
-            if (MenuLevel != EMenuLevel.First)
+            else if (userChoice == "m") // User wants to jump back to the main menu
             {
-                return "m"; 
+                if (MenuLevel != EMenuLevel.First) return "m";
             }
-        }
-        else if (userChoice == "x")  // User wants to exit the application
-        {
-            return "x";
-        }
-        else  // The choice did not match any item or reserved shortcut
-        {
-            Console.WriteLine("Unsupported shortcut. Press any key to try again.");
-            Console.ReadKey();
-        }
-
-    } while (true); 
-}
-
+            else if (userChoice == "x") // User wants to exit the application
+            {
+                return "x";
+            }
+            else // The choice did not match any item or reserved shortcut
+            {
+                Console.WriteLine("Unsupported shortcut. Press any key to try again.");
+                Console.ReadKey();
+            }
+        } while (true);
+    }
 }
