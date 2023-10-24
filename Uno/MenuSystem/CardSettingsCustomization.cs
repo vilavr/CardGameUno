@@ -15,11 +15,6 @@ public class CardSettingsCustomization
         var jsonData = File.ReadAllText(filePath);
         _settings = JObject.Parse(jsonData);
     }
-    private int GetNumberOfDecks()
-    {
-        var numberOfDecksToken = _settings.SelectToken("gameSettings.NumberOfDecks");
-        return numberOfDecksToken?.Value<int>() ?? 1; // Default to 1 deck if not specified
-    }
 
     private (string cardName, int newQuantity, int currentQuantity)? ValidateAndNormalizeInput(string input)
     {
@@ -30,8 +25,6 @@ public class CardSettingsCustomization
         if (!match.Success)
             // Console.WriteLine("Debug: Regex match was not successful.");
             return null;
-        int numberOfDecks = GetNumberOfDecks();
-        int upperLimitPerCard = 4 * numberOfDecks;
         
         // Normalize card name
         var cardName = GetNormalizedCardName(match.Groups["card"].Value.Trim());
@@ -77,9 +70,9 @@ public class CardSettingsCustomization
         // Console.WriteLine($"Debug: New quantity: {newQuantity}");
 
         // Check if new quantity falls within the acceptable range
-        if (newQuantity < 0 || newQuantity > upperLimitPerCard)
+        if (newQuantity < 0 || newQuantity > 4)
         {
-            Console.WriteLine($"Invalid quantity. The number of '{cardName.Replace("_", " ")}' cards must be between 0 and {upperLimitPerCard}.");
+            Console.WriteLine($"Invalid quantity. The number of '{cardName.Replace("_", " ")}' cards must be between 0 and 4.");
             return null;
         }
 
