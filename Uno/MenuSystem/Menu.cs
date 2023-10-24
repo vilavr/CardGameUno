@@ -5,9 +5,9 @@ public class Menu
     private static readonly string[] ReservedShortcutsFirst = { "x" };
     private static readonly string[] ReservedShortcutsSecond = { "x", "b" };
     private static readonly string[] ReservedShortcutsThird = { "x", "b", "m" };
-    private string[] ReservedShortcuts;
 
     private readonly string Separator = "============================";
+    private string[] ReservedShortcuts;
 
     public Menu(string? title, List<MenuItem> menuItems, EMenuLevel menuLevel = EMenuLevel.First)
     {
@@ -83,6 +83,7 @@ public class Menu
                 if (selectedMenuItem.MethodToRun != null)
                 {
                     var result = selectedMenuItem.MethodToRun();
+                    if (result?.ToLower() == "back") return "b";
                     if (result?.ToLower() == "x")
                         return "x";
                     if (result?.ToLower() == "m") return "m";

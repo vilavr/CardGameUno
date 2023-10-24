@@ -15,6 +15,11 @@ public class CardSettingsCustomization
         var jsonData = File.ReadAllText(filePath);
         _settings = JObject.Parse(jsonData);
     }
+    private int GetNumberOfDecks()
+    {
+        var numberOfDecksToken = _settings.SelectToken("gameSettings.NumberOfDecks");
+        return numberOfDecksToken?.Value<int>() ?? 1; // Default to 1 deck if not specified
+    }
 
     private (string cardName, int newQuantity, int currentQuantity)? ValidateAndNormalizeInput(string input)
     {
@@ -25,7 +30,9 @@ public class CardSettingsCustomization
         if (!match.Success)
             // Console.WriteLine("Debug: Regex match was not successful.");
             return null;
-
+        int numberOfDecks = GetNumberOfDecks();
+        int upperLimitPerCard = 4 * numberOfDecks;
+        
         // Normalize card name
         var cardName = GetNormalizedCardName(match.Groups["card"].Value.Trim());
         // Console.WriteLine($"Debug: Normalized card name: '{cardName}'");
@@ -70,9 +77,11 @@ public class CardSettingsCustomization
         // Console.WriteLine($"Debug: New quantity: {newQuantity}");
 
         // Check if new quantity falls within the acceptable range
-        if (newQuantity < 0 || newQuantity > 4)
-            // Console.WriteLine("Debug: New quantity is out of the allowed range.");
+        if (newQuantity < 0 || newQuantity > upperLimitPerCard)
+        {
+            Console.WriteLine($"Invalid quantity. The number of '{cardName.Replace("_", " ")}' cards must be between 0 and {upperLimitPerCard}.");
             return null;
+        }
 
         return (cardName, newQuantity, currentQuantity);
     }
@@ -175,15 +184,12 @@ public class CardSettingsCustomization
             }
             else
             {
-                // Navigate to the nested card settings and update the value there.
                 var cardSettings = (JObject)_settings["cardSettings"]!; // Access the 'cardSettings' object.
-                cardSettings[cardName] = newQuantity; // Directly update the value inside the nested structure.
-                Console.WriteLine($"Updated quantity of '{cardName.Replace("_", " ")}' cards to: {newQuantity}");
+                cardSettings[cardName] = newQuantity;
+                File.WriteAllText(_filePath, _settings.ToString());
+                Console.WriteLine($"Updated quantity of '{cardName.Replace("_", " ")}' cards to: {newQuantity} in file: {_filePath}");
+
             }
         }
-
-        // After all changes, save the updated settings back to the file
-        File.WriteAllText(_filePath, _settings.ToString());
-        Console.WriteLine("\nAll changes saved successfully.");
     }
 }

@@ -27,23 +27,17 @@ string PromptForSettingsFile()
     Console.Write(
         "Enter the name of the settings file to save your customizations (Press Enter to change default settings): ");
     var filename = Console.ReadLine()!.Trim();
-
-    // Check if the filename is empty or only whitespace and if so, use the default settings file
     if (string.IsNullOrWhiteSpace(filename))
     {
-        filename = "default_settings.json"; // specifying the complete default file name
+        filename = "default_settings.json";
         Console.WriteLine("No input provided. Using default settings.");
     }
     else if (!filename.EndsWith(".json"))
     {
-        // Append ".json" if it's not already there.
         filename += ".json";
     }
 
-    // Construct the full path. Be cautious with paths and consider checks for invalid characters, etc.
     var fullPath = Path.Combine("/home/viralavrova/cardgameuno/Uno/Resources", filename);
-
-    // Save the full path in the global state or application settings, wherever it's appropriate in your case.
     ApplicationState.SettingsFileName = fullPath;
 
     return fullPath;
@@ -69,7 +63,7 @@ var cardSettingsToCustomize = new Menu("Choose which card setting you'd like to 
                 Console.WriteLine($"An error occurred: {ex.Message}");
             }
 
-            return "back"; // Return to the previous menu after the operation
+            return "return"; // Return to the previous menu after the operation
         }
     }
 }, EMenuLevel.Other);
@@ -89,7 +83,7 @@ var gameSettingsToCustomize = new Menu(
                 numberOfDecksPrompt.UpdateSetting(userChoice, numberOfDecksPrompt);
 
                 Console.WriteLine($"Number of decks updated to: {userChoice}");
-                return "back";
+                return "return";
             }
         },
         new()
@@ -102,7 +96,7 @@ var gameSettingsToCustomize = new Menu(
                 winningScorePrompt.UpdateSetting(userChoice, winningScorePrompt);
 
                 Console.WriteLine($"Winning score updated to: {userChoice}");
-                return "back";
+                return "return";
             }
         },
         new()
@@ -115,28 +109,52 @@ var gameSettingsToCustomize = new Menu(
                 directionPrompt.UpdateSetting(userChoice, directionPrompt);
 
                 Console.WriteLine($"Playing direction updated to: {userChoice}");
-                return "back";
+                return "return";
             }
         }
     },
     EMenuLevel.Other
 );
 
-var kindofSettingsToCustomize = new Menu("Choose what category of settings you'd like to customize", new List<MenuItem>
-{
-    new()
+var kindofSettingsToCustomizeSettings = new Menu("Choose what category of settings you'd like to customize",
+    new List<MenuItem>
     {
-        Shortcut = "1",
-        MenuLabel = "Card settings",
-        MethodToRun = cardSettingsToCustomize.Run
-    },
-    new()
+        new()
+        {
+            Shortcut = "1",
+            MenuLabel = "Card settings",
+            MethodToRun = cardSettingsToCustomize.Run
+        },
+        new()
+        {
+            Shortcut = "2",
+            MenuLabel = "Game settings",
+            MethodToRun = gameSettingsToCustomize.Run
+        }
+    }, EMenuLevel.Second);
+
+var kindofSettingsToCustomizeStartGame = new Menu("Choose what category of settings you'd like to customize",
+    new List<MenuItem>
     {
-        Shortcut = "2",
-        MenuLabel = "Game settings",
-        MethodToRun = gameSettingsToCustomize.Run
-    }
-}, EMenuLevel.Other);
+        new()
+        {
+            Shortcut = "1",
+            MenuLabel = "Card settings",
+            MethodToRun = cardSettingsToCustomize.Run
+        },
+        new()
+        {
+            Shortcut = "2",
+            MenuLabel = "Game settings",
+            MethodToRun = gameSettingsToCustomize.Run
+        },
+        new()
+        {
+            Shortcut = "3",
+            MenuLabel = "Finish customization",
+            MethodToRun = () => { return "back"; }
+        }
+    }, EMenuLevel.Other);
 
 var settingsChoice = new Menu("Choose what settings you want to continue with", new List<MenuItem>
 {
@@ -144,8 +162,11 @@ var settingsChoice = new Menu("Choose what settings you want to continue with", 
     {
         Shortcut = "1",
         MenuLabel = "Default settings",
-        MethodToRun = () => 
+        MethodToRun = () =>
         {
+            var settingsManager = new SettingsFileManager("/home/viralavrova/cardgameuno/Uno/Resources");
+            settingsManager.PromptAndCopySettings(true);
+
             var gameSetup = new GameSetup();
             return gameSetup.CreatePlayers();
         }
@@ -156,15 +177,59 @@ var settingsChoice = new Menu("Choose what settings you want to continue with", 
         MenuLabel = "Customise settings",
         MethodToRun = () =>
         {
-            PromptForSettingsFile();
-            kindofSettingsToCustomize.Run();
+            Console.Write("Do you want to save these customizations for future use? (yes/no): ");
+            var saveForFuture = Console.ReadLine()?.Trim().ToLower() ?? "no";
+
+            string customSettingsFilePath;
+            var settingsManager = new SettingsFileManager("/home/viralavrova/cardgameuno/Uno/Resources");
+            var targetSettingsFilePath =
+                Path.Combine("/home/viralavrova/cardgameuno/Uno/Resources", "settings_info.json");
+
+            if (saveForFuture == "yes")
+            {
+                Console.Write("Enter the name for the settings file (without extension): ");
+                var customSettingsFile = Console.ReadLine()?.Trim() ?? "custom_settings";
+                customSettingsFilePath = Path.Combine("/home/viralavrova/cardgameuno/Uno/Resources",
+                    customSettingsFile + ".json");
+
+                if (!File.Exists(customSettingsFilePath))
+                    settingsManager.CopyContentsToSettingsInfo(
+                        Path.Combine("/home/viralavrova/cardgameuno/Uno/Resources", "default_settings.json"),
+                        customSettingsFilePath);
+
+                // Set the custom settings file as the one to use for this session.
+                ApplicationState.SettingsFileName = customSettingsFilePath;
+                kindofSettingsToCustomizeStartGame.Run();
+                settingsManager.CopyContentsToSettingsInfo(customSettingsFilePath, targetSettingsFilePath);
+            }
+            else
+            {
+                var defaultSettingsFilePath = "/home/viralavrova/cardgameuno/Uno/Resources/default_settings.json";
+                settingsManager.CopyContentsToSettingsInfo(defaultSettingsFilePath, targetSettingsFilePath);
+
+                // Set 'settings_info.json' as the file to use for this session.
+                ApplicationState.SettingsFileName = targetSettingsFilePath;
+                kindofSettingsToCustomizeStartGame.Run();
+            }
+
+            var gameSetup = new GameSetup();
+            return gameSetup.CreatePlayers();
+
             return null;
         }
     },
     new()
     {
         Shortcut = "3",
-        MenuLabel = "Use pre-saved settings"
+        MenuLabel = "Use pre-saved settings",
+        MethodToRun = () =>
+        {
+            var settingsManager = new SettingsFileManager("/home/viralavrova/cardgameuno/Uno/Resources");
+            settingsManager.PromptAndCopySettings(false);
+
+            var gameSetup = new GameSetup();
+            return gameSetup.CreatePlayers();
+        }
     }
 }, EMenuLevel.Second);
 var mainMenu = new Menu("Main menu", new List<MenuItem>
@@ -182,7 +247,7 @@ var mainMenu = new Menu("Main menu", new List<MenuItem>
         MethodToRun = () =>
         {
             PromptForSettingsFile();
-            kindofSettingsToCustomize.Run();
+            kindofSettingsToCustomizeSettings.Run();
             return null;
         }
     },

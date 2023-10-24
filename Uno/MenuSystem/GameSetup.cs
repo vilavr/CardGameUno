@@ -1,3 +1,4 @@
+using System.Text.Json;
 using System.Text.RegularExpressions;
 
 namespace MenuSystem;
@@ -49,7 +50,7 @@ public class GameSetup
 
             playerInfos += $"{player.Id} : {player.Nickname} : {player.Type}";
 
-            if (i < playerCount - 1) 
+            if (i < playerCount - 1)
                 playerInfos += " ; ";
 
             Console.WriteLine($"{nickname} has been added as a {playerType} player.");
@@ -97,7 +98,7 @@ public class GameSetup
         {
             // Split each player's info into its components.
             var parts = info.Split(new[] { " : " }, StringSplitOptions.None);
-            if (parts.Length == 3) 
+            if (parts.Length == 3)
             {
                 var id = int.Parse(parts[0]);
                 var nickname = parts[1];
@@ -123,7 +124,12 @@ public class GameSetup
             var userInput = Console.ReadLine();
 
             if (string.IsNullOrWhiteSpace(userInput))
+            {
+                // Save the finalized list of players to the JSON file.
+                SavePlayersToJson(players);
+                Console.WriteLine("Players have been saved successfully.");
                 break;
+            }
 
             if (int.TryParse(userInput, out var playerId) && playerId > 0 && playerId <= players.Count)
             {
@@ -184,5 +190,16 @@ public class GameSetup
         } while (!isUnique);
 
         return newNickname;
+    }
+
+    public void SavePlayersToJson(List<Player> players)
+    {
+        var options = new JsonSerializerOptions { WriteIndented = true };
+        var json = JsonSerializer.Serialize(players, options);
+        var directoryPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory,
+            "/home/viralavrova/cardgameuno/Uno/Resources");
+        Directory.CreateDirectory(directoryPath); // If it already exists, this method does nothing
+        var filePath = Path.Combine(directoryPath, "players_info.json");
+        File.WriteAllText(filePath, json);
     }
 }
