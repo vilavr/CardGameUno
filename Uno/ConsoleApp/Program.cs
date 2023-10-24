@@ -143,7 +143,12 @@ var settingsChoice = new Menu("Choose what settings you want to continue with", 
     new()
     {
         Shortcut = "1",
-        MenuLabel = "Default settings"
+        MenuLabel = "Default settings",
+        MethodToRun = () => 
+        {
+            var gameSetup = new GameSetup();
+            return gameSetup.CreatePlayers();
+        }
     },
     new()
     {
@@ -156,7 +161,6 @@ var settingsChoice = new Menu("Choose what settings you want to continue with", 
             return null;
         }
     },
-
     new()
     {
         Shortcut = "3",
