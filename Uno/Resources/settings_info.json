@@ -56,7 +56,7 @@
     "Wild_DrawFour": 4
   },
   "gameSettings": {
-    "NumberOfDecks": 1,
+    "NumberOfDecks": 2,
     "WinningScore": 500,
     "PlayDirection": "counterclockwise"
   }

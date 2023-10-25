@@ -164,12 +164,18 @@ var settingsChoice = new Menu("Choose what settings you want to continue with", 
         MenuLabel = "Default settings",
         MethodToRun = () =>
         {
+            // Managing settings files.
             var settingsManager = new SettingsFileManager("/home/viralavrova/cardgameuno/Uno/Resources");
             settingsManager.PromptAndCopySettings(true);
 
+            // Setting up the game with players and deck
             var gameSetup = new GameSetup();
-            return gameSetup.CreatePlayers();
+            var players = gameSetup.CreatePlayers();
+            var deck = new CardDeck("/home/viralavrova/cardgameuno/Uno/Resources/settings_info.json"); 
+            deck.InitializeDeck(); 
+            return players;
         }
+
     },
     new()
     {
@@ -213,9 +219,10 @@ var settingsChoice = new Menu("Choose what settings you want to continue with", 
             }
 
             var gameSetup = new GameSetup();
-            return gameSetup.CreatePlayers();
-
-            return null;
+            var players = gameSetup.CreatePlayers();
+            var deck = new CardDeck("/home/viralavrova/cardgameuno/Uno/Resources/settings_info.json"); 
+            deck.InitializeDeck(); 
+            return players;
         }
     },
     new()
