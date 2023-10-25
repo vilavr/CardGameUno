@@ -74,4 +74,19 @@ public class CardDeck
 
         PrintDeck(); // Optionally print the deck after initialization
     }
+    
+    public void ShuffleDeck()
+    {
+        Random rng = new Random();
+        int n = Cards.Count;
+
+        while (n > 1)
+        {
+            n--;
+            int k = rng.Next(n + 1); 
+            (Cards[k], Cards[n]) = (Cards[n], Cards[k]);
+        }
+        PrintDeck();
+    }
+
 }

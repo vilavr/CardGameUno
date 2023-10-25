@@ -1,12 +1,12 @@
 [
   {
     "Id": 1,
-    "Nickname": "2",
-    "Type": 1
+    "Nickname": "1",
+    "Type": 0
   },
   {
     "Id": 2,
-    "Nickname": "22",
-    "Type": 1
+    "Nickname": "11",
+    "Type": 0
   }
 ]

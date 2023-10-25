@@ -173,9 +173,9 @@ var settingsChoice = new Menu("Choose what settings you want to continue with", 
             var players = gameSetup.CreatePlayers();
             var deck = new CardDeck("/home/viralavrova/cardgameuno/Uno/Resources/settings_info.json"); 
             deck.InitializeDeck(); 
+            deck.ShuffleDeck();
             return players;
         }
-
     },
     new()
     {
@@ -235,7 +235,10 @@ var settingsChoice = new Menu("Choose what settings you want to continue with", 
             settingsManager.PromptAndCopySettings(false);
 
             var gameSetup = new GameSetup();
-            return gameSetup.CreatePlayers();
+            var players = gameSetup.CreatePlayers();
+            var deck = new CardDeck("/home/viralavrova/cardgameuno/Uno/Resources/settings_info.json"); 
+            deck.InitializeDeck(); 
+            return players;
         }
     }
 }, EMenuLevel.Second);
