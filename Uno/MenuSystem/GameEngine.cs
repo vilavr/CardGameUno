@@ -23,11 +23,15 @@ public class GameEngine
         _gameSetup.PrintPlayersList(players);
         // Initialize and shuffle the deck
         _deck.InitializeDeck();
+        Console.WriteLine($"cards in the deck: {_deck.Cards.Count}");
         _deck.ShuffleDeck();
         _deck.PrintDeck();
         // Deal the cards to players
         var cardDealer = new CardsDeal(_deck, players, _gameSettings.NumberOfCardsPerPlayer);
         cardDealer.DealCards();
+        // Randomly select the first player
+        _gameSetup.DetermineFirstPlayerAndReorder(players);
+        // Draw the random card to start the game
+        Card startingCard = _deck.DrawCard("random"); 
     }
-    
 }

@@ -1,4 +1,5 @@
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 
 namespace MenuSystem;
@@ -198,17 +199,57 @@ public class GameSetup
 
         return newNickname;
     }
+    private Dictionary<string, int> PreparePlayerHandForSerialization(List<Card> hand)
+    {
+        var cardCounts = new Dictionary<string, int>();
 
+        foreach (var card in hand)
+        {
+            var cardName = card.ToString();
+
+            if (cardCounts.ContainsKey(cardName))
+            {
+                cardCounts[cardName]++;
+            }
+            else
+            {
+                cardCounts[cardName] = 1;
+            }
+        }
+
+        return cardCounts;
+    }
     public void SavePlayersToJson(List<Player> players)
     {
-        var options = new JsonSerializerOptions { WriteIndented = true };
-        var json = JsonSerializer.Serialize(players, options);
-        var directoryPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory,
-            "/home/viralavrova/cardgameuno/Uno/Resources");
+        var playerData = new Dictionary<string, PlayerInfo>();
+
+        foreach (var player in players)
+        {
+            // Prepare the hand for serialization as before
+            var preparedHand = PreparePlayerHandForSerialization(player.Hand);
+
+            // Create a new PlayerInfo record with the required information
+            var info = new PlayerInfo(player.Nickname, player.Type.ToString(), preparedHand); // Convert the enum to a string here
+
+            // Add this to our dictionary
+            playerData[player.Id.ToString()] = info;
+        }
+
+        // Modify JsonSerializerOptions to serialize enums as strings
+        var options = new JsonSerializerOptions 
+        { 
+            WriteIndented = true,
+            Converters = { new JsonStringEnumConverter() } // This converter is necessary for handling enums as strings
+        };
+
+        var json = JsonSerializer.Serialize(playerData, options);
+
+        var directoryPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "/home/viralavrova/cardgameuno/Uno/Resources");
         Directory.CreateDirectory(directoryPath); // If it already exists, this method does nothing
         var filePath = Path.Combine(directoryPath, "players_info.json");
         File.WriteAllText(filePath, json);
     }
+
     
     public List<Player> SitPlayers(List<Player> players, GameSettings settings)
     {
@@ -234,5 +275,32 @@ public class GameSetup
         }
         SavePlayersToJson(players);
         return players;
+    }
+    
+    public void DetermineFirstPlayerAndReorder(List<Player> players)
+    {
+        if (players == null || players.Count == 0)
+        {
+            throw new InvalidOperationException("There must be at least one player to start the game.");
+        }
+
+        // Randomly select an ID. IDs range from 1 to players.Count.
+        var random = new Random();
+        int randomPlayerId = random.Next(1, players.Count + 1); // This generates a number between 1 and players.Count inclusive.
+
+        // Find the player with the selected ID.
+        Player firstPlayer = players.FirstOrDefault(p => p.Id == randomPlayerId)!;
+
+        if (firstPlayer == null)
+        {
+            throw new InvalidOperationException("No player found with the selected ID.");
+        }
+        var reorderedPlayers = new List<Player> { firstPlayer };
+        reorderedPlayers.AddRange(players.Where(p => p.Id != randomPlayerId));
+        players.Clear();
+        players.AddRange(reorderedPlayers);
+        SavePlayersToJson(players);
+
+        Console.WriteLine($"{firstPlayer.Nickname} has been randomly selected to start the game.");
     }
 }

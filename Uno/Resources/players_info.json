@@ -1,20 +1,26 @@
-[
-  {
-    "Id": 3,
-    "Nickname": "111",
-    "Type": 0,
-    "Hand": []
+{
+  "2": {
+    "Nickname": "22",
+    "Type": "AI",
+    "Hand": {
+      "Red Six": 1,
+      "Blue Four": 1,
+      "Blue Eight": 1,
+      "Yellow Skip": 1,
+      "Blue Zero": 1,
+      "Wild Wild": 1
+    }
   },
-  {
-    "Id": 2,
-    "Nickname": "11",
-    "Type": 0,
-    "Hand": []
-  },
-  {
-    "Id": 1,
-    "Nickname": "1",
-    "Type": 0,
-    "Hand": []
+  "1": {
+    "Nickname": "2",
+    "Type": "AI",
+    "Hand": {
+      "Green Skip": 1,
+      "Yellow Reverse": 1,
+      "Blue Seven": 1,
+      "Yellow Two": 1,
+      "Red Nine": 1,
+      "Wild WildDrawFour": 1
+    }
   }
-]
+}
