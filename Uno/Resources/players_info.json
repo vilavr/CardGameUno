@@ -2,16 +2,19 @@
   {
     "Id": 3,
     "Nickname": "111",
-    "Type": 0
+    "Type": 0,
+    "Hand": []
   },
   {
     "Id": 2,
     "Nickname": "11",
-    "Type": 0
+    "Type": 0,
+    "Hand": []
   },
   {
     "Id": 1,
     "Nickname": "1",
-    "Type": 0
+    "Type": 0,
+    "Hand": []
   }
 ]

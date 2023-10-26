@@ -1,11 +1,12 @@
 using Newtonsoft.Json.Linq;
+using System.Collections.Generic;
 
 namespace MenuSystem;
 
 public class CardDeck
 {
     private readonly string _settingsFilePath;
-
+    private Random RandomGenerator { get; } = new Random();
     public CardDeck(string settingsFilePath)
     {
         _settingsFilePath = settingsFilePath;
@@ -71,8 +72,7 @@ public class CardDeck
             // Add cards to the deck based on the specified count and number of decks
             for (var i = 0; i < cardCount * numberOfDecks; i++) Cards.Add(new Card(color, value));
         }
-
-        PrintDeck(); // Optionally print the deck after initialization
+        
     }
     
     public void ShuffleDeck()
@@ -86,7 +86,28 @@ public class CardDeck
             int k = rng.Next(n + 1); 
             (Cards[k], Cards[n]) = (Cards[n], Cards[k]);
         }
-        PrintDeck();
     }
 
+    public Card DrawCard(string mode = "top")
+    {
+        if (Cards.Count == 0)
+        {
+            throw new InvalidOperationException("Cannot draw a card from an empty deck.");
+        }
+
+        if (mode.Equals("random", StringComparison.OrdinalIgnoreCase))
+        {
+            
+            int index = RandomGenerator.Next(Cards.Count);
+            Card drawnCard = Cards[index];
+            Cards.RemoveAt(index); // Removing the drawn card from the deck
+            return drawnCard;
+        }
+        else
+        {
+            Card topCard = Cards[0];
+            Cards.RemoveAt(0); // Removing the top card from the deck
+            return topCard;
+        }
+    }
 }

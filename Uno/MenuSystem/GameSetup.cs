@@ -210,7 +210,7 @@ public class GameSetup
         File.WriteAllText(filePath, json);
     }
     
-    public List<Player> SitPlayers(List<Player> players)
+    public List<Player> SitPlayers(List<Player> players, GameSettings settings)
     {
         // Load the JSON configuration from the file
         var jsonFilePath = "/home/viralavrova/cardgameuno/Uno/Resources/settings_info.json";

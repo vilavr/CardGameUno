@@ -186,25 +186,14 @@ var settingsChoice = new Menu("Choose what settings you want to continue with", 
             var settingsManager = new SettingsFileManager("/home/viralavrova/cardgameuno/Uno/Resources");
             settingsManager.PromptAndCopySettings(true);
 
-            // Setting up the game with players and deck
-            var gameSetup = new GameSetup();
+            string settingsFilePath = "/home/viralavrova/cardgameuno/Uno/Resources/settings_info.json";
+            var gameEngine = new GameEngine(settingsFilePath);
 
-            // Creating players and parsing the created player information string into Player objects
-            string playersInfo = gameSetup.CreatePlayers();
-            List<Player> playerList = gameSetup.ParsePlayerInfo(playersInfo);
+            // Start the game
+            gameEngine.StartGame();
 
-            // Sit the players according to the game configuration (e.g., playing direction)
-            playerList = gameSetup.SitPlayers(playerList);
 
-            // Print out the list of sitted players in JSON format to the console
-            gameSetup.PrintPlayersList(playerList);
-
-            // Preparing the deck
-            var deck = new CardDeck("/home/viralavrova/cardgameuno/Uno/Resources/settings_info.json"); 
-            deck.InitializeDeck(); 
-            deck.ShuffleDeck();
-
-            return null; // Returning the list of sitted players
+            return null;
         }
 
     },
@@ -250,11 +239,14 @@ var settingsChoice = new Menu("Choose what settings you want to continue with", 
                 kindofSettingsToCustomizeStartGame.Run();
             }
 
-            var gameSetup = new GameSetup();
-            var players = gameSetup.CreatePlayers();
-            var deck = new CardDeck("/home/viralavrova/cardgameuno/Uno/Resources/settings_info.json"); 
-            deck.InitializeDeck(); 
-            return players;
+            string settingsFilePath = "/home/viralavrova/cardgameuno/Uno/Resources/settings_info.json";
+            var gameEngine = new GameEngine(settingsFilePath);
+
+            // Start the game
+            gameEngine.StartGame();
+
+
+            return null;
         }
     },
     new()
@@ -266,11 +258,14 @@ var settingsChoice = new Menu("Choose what settings you want to continue with", 
             var settingsManager = new SettingsFileManager("/home/viralavrova/cardgameuno/Uno/Resources");
             settingsManager.PromptAndCopySettings(false);
 
-            var gameSetup = new GameSetup();
-            var players = gameSetup.CreatePlayers();
-            var deck = new CardDeck("/home/viralavrova/cardgameuno/Uno/Resources/settings_info.json"); 
-            deck.InitializeDeck(); 
-            return players;
+            string settingsFilePath = "/home/viralavrova/cardgameuno/Uno/Resources/settings_info.json";
+            var gameEngine = new GameEngine(settingsFilePath);
+
+            // Start the game
+            gameEngine.StartGame();
+
+
+            return null;
         }
     }
 }, EMenuLevel.Second);
