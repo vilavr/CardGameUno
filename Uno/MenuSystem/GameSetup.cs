@@ -110,14 +110,21 @@ public class GameSetup
 
         return players;
     }
+    public void PrintPlayersList(List<Player> players)
+    {
+        Console.WriteLine("\nList of players:");
+        for (var i = 0; i < players.Count; i++)
+        {
+            // Print each player's details in the specified format
+            Console.WriteLine($"{players[i].Id}. {players[i].Nickname}, {players[i].Type}");
+        }
+    }
 
     public void ReviewAndEditPlayers(List<Player> players)
     {
         while (true) // Loop until the user is satisfied with the player list
         {
-            Console.WriteLine("\nList of players:");
-            for (var i = 0; i < players.Count; i++)
-                Console.WriteLine($"{players[i].Id}. {players[i].Nickname}, {players[i].Type}");
+            PrintPlayersList(players);
 
             Console.WriteLine(
                 "\nPress ENTER if you are satisfied with the list, or enter the player's ID you wish to edit:");
@@ -201,5 +208,31 @@ public class GameSetup
         Directory.CreateDirectory(directoryPath); // If it already exists, this method does nothing
         var filePath = Path.Combine(directoryPath, "players_info.json");
         File.WriteAllText(filePath, json);
+    }
+    
+    public List<Player> SitPlayers(List<Player> players)
+    {
+        // Load the JSON configuration from the file
+        var jsonFilePath = "/home/viralavrova/cardgameuno/Uno/Resources/settings_info.json";
+        var jsonString = File.ReadAllText(jsonFilePath);
+
+        GameSettings gameSettings;
+        try
+        {
+            gameSettings = new GameSettings(jsonString);
+        }
+        catch (InvalidOperationException ex)
+        {
+            Console.WriteLine($"Error in loading game settings: {ex.Message}");
+            return players; 
+        }
+
+        var isCounterclockwise = gameSettings.PlayDirection.Equals("counterclockwise", StringComparison.OrdinalIgnoreCase);
+        if (isCounterclockwise)
+        {
+            players.Reverse();
+        }
+        SavePlayersToJson(players);
+        return players;
     }
 }

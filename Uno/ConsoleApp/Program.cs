@@ -18,6 +18,11 @@ var directionPrompt = new GameSettingsCustomization<string>(
     "gameSettings:PlayDirection"
 );
 
+var numberOfCardsPrompt = new GameSettingsCustomization<int>(
+    "Enter the number of cards per player (5-10): ",
+    Enumerable.Range(5, 6).ToList(), // Allowing choices from 5 to 10 cards per player.
+    "gameSettings:NumberOfCardsPerPlayer"
+);
 
 var cardQuantityChangePrompt =
     new CardSettingsCustomization("/home/viralavrova/cardgameuno/Uno/Resources/default_settings.json");
@@ -111,6 +116,19 @@ var gameSettingsToCustomize = new Menu(
                 Console.WriteLine($"Playing direction updated to: {userChoice}");
                 return "return";
             }
+        },
+        new()
+        {
+            Shortcut = "4",
+            MenuLabel = "Number of cards per player",
+            MethodToRun = () =>
+            {
+                var userChoice = numberOfCardsPrompt.GetUserInput();
+                numberOfCardsPrompt.UpdateSetting(userChoice, numberOfCardsPrompt);
+
+                Console.WriteLine($"Number of cards per player updated to: {userChoice}");
+                return "return";
+            }
         }
     },
     EMenuLevel.Other
@@ -170,12 +188,25 @@ var settingsChoice = new Menu("Choose what settings you want to continue with", 
 
             // Setting up the game with players and deck
             var gameSetup = new GameSetup();
-            var players = gameSetup.CreatePlayers();
+
+            // Creating players and parsing the created player information string into Player objects
+            string playersInfo = gameSetup.CreatePlayers();
+            List<Player> playerList = gameSetup.ParsePlayerInfo(playersInfo);
+
+            // Sit the players according to the game configuration (e.g., playing direction)
+            playerList = gameSetup.SitPlayers(playerList);
+
+            // Print out the list of sitted players in JSON format to the console
+            gameSetup.PrintPlayersList(playerList);
+
+            // Preparing the deck
             var deck = new CardDeck("/home/viralavrova/cardgameuno/Uno/Resources/settings_info.json"); 
             deck.InitializeDeck(); 
             deck.ShuffleDeck();
-            return players;
+
+            return null; // Returning the list of sitted players
         }
+
     },
     new()
     {
@@ -206,6 +237,7 @@ var settingsChoice = new Menu("Choose what settings you want to continue with", 
                 // Set the custom settings file as the one to use for this session.
                 ApplicationState.SettingsFileName = customSettingsFilePath;
                 kindofSettingsToCustomizeStartGame.Run();
+                
                 settingsManager.CopyContentsToSettingsInfo(customSettingsFilePath, targetSettingsFilePath);
             }
             else
