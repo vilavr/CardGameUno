@@ -303,4 +303,26 @@ public class GameSetup
 
         Console.WriteLine($"{firstPlayer.Nickname} has been randomly selected to start the game.");
     }
+    
+    public int GetCurrentPlayerId(List<Player> _players)
+    {
+        return _players[0].Id;
+    }
+    public void AdvanceTurn(List<Player> _players)
+    {
+        // Shift the player list.
+        var previousPlayer = _players[0];
+        _players.RemoveAt(0);
+        _players.Add(previousPlayer);
+
+        // Save changes to JSON.
+        SavePlayersToJson(_players);
+    }
+
+    public void ReversePlayerOrder(List<Player> _players)
+    {
+        _players.Reverse();
+        AdvanceTurn(_players); 
+        SavePlayersToJson(_players);
+    }
 }
