@@ -199,7 +199,7 @@ public class GameSetup
 
         return newNickname;
     }
-    private Dictionary<string, int> PreparePlayerHandForSerialization(List<Card> hand)
+    public Dictionary<string, int> PreparePlayerHandForSerialization(List<Card> hand)
     {
         var cardCounts = new Dictionary<string, int>();
 
