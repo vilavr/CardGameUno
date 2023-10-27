@@ -49,40 +49,68 @@ public class GameEngine
         gameState.AddCardToDiscard(startingCard);
         bool gameIsRunning = true;
         while (gameIsRunning)
+{
+    List<Player> playersSnapshot = new List<Player>(_players);
+
+    for (int i = 0; i < playersSnapshot.Count; i++)
+    {
+        // We need to find the player whose turn it is based on the CurrentPlayerTurn ID
+        Player? currentPlayer = _players.FirstOrDefault(p => p.Id == gameState.CurrentPlayerTurn);
+        if (currentPlayer == null)
         {
-            List<Player> playersSnapshot = new List<Player>(_players);
-
-            // Iterate through each player for their turn
-            for (int i = 0; i < playersSnapshot.Count; i++) 
-            {
-                Player currentPlayer = _players[i]; 
-                // Console.WriteLine($"Before taking turn - Current player ID: {currentPlayer.Id}");
-
-                gameState.CurrentPlayerTurn = currentPlayer.Id; 
-
-                var playerTurn = new PlayerAction(currentPlayer, gameState);
-                playerTurn.TakeTurn();
-                // Console.WriteLine($"After taking turn - Current player ID: {currentPlayer.Id}");
-
-                if (currentPlayer.Hand.Count == 0)
-                {
-                    Console.WriteLine($"{currentPlayer.Nickname} has won the game!");
-                    gameIsRunning = false;
-                    break; 
-                }
-
-                // If the turn is over and no win condition is met, advance to the next player
-                if (playerTurn.IsTurnOver)
-                {
-                    // Console.WriteLine($"turn over value in if statement: {playerTurn.IsTurnOver}");
-                    // Console.WriteLine($"Before advancing turn - Current player ID: {currentPlayer.Id}");
-
-                    _gameSetup.AdvanceTurn(_players, gameState);
-                    int nextPlayerIndex = (i + 1) % _players.Count;
-                    // Console.WriteLine($"After advancing turn - Next player ID: {_players[nextPlayerIndex].Id}");
-                }
-            }
+            Console.WriteLine("[ERROR] No matching player found for the current turn. This should never happen.");
+            break;
         }
+
+        // The game only sets the CurrentPlayerTurn if no special card effect (like Skip) was applied in the previous turn.
+        if (!gameState.SpecialCardEffectApplied)
+        {
+            gameState.CurrentPlayerTurn = currentPlayer.Id;
+        }
+        else
+        {
+            // Console.WriteLine($"[DEBUG] Skip effect active. Skipping Player ID : {currentPlayer.Id}'s turn.");
+            gameState.SpecialCardEffectApplied = false; // Reset the flag after respecting the Skip effect.
+            _gameSetup.AdvanceTurn(_players, gameState); 
+            continue; 
+        }
+        // Console.WriteLine($"Id after exiting the if: {currentPlayer.Id}");
+        var playerTurn = new PlayerAction(currentPlayer, gameState);
+        // Console.WriteLine($"Id before taking turn: {currentPlayer.Id}");
+        playerTurn.TakeTurn();
+
+        // Check for victory condition
+        if (currentPlayer.Hand.Count == 0)
+        {
+            Console.WriteLine($"{currentPlayer.Nickname} has won the game!");
+            gameIsRunning = false;
+            break; 
+        }
+
+        // Check if a special card effect was applied.
+        if (gameState.SpecialCardEffectApplied)
+        {
+            // Console.WriteLine($"[DEBUG] engine Special card effect was applied during Player {currentPlayer.Id}'s turn. Not advancing turn.");
+            // Important: Reset the flag for the next player's turn.
+            gameState.SpecialCardEffectApplied = false;
+        }
+        else
+        {
+            // Console.WriteLine($"[DEBUG] engine No special card effects were applied. Advancing turn.");
+
+            _gameSetup.AdvanceTurn(_players, gameState);
+
+            int nextPlayerIndex = (i + 1) % _players.Count;
+            // Console.WriteLine($"[DEBUG] engine Turn advanced. It's now Player {_players[nextPlayerIndex].Id}'s turn.");
+
+            // Update the gameState's CurrentPlayerTurn to the next player.
+            gameState.CurrentPlayerTurn = _players[nextPlayerIndex].Id;
+        }
+    }
+}
+
+
+
 
 
         

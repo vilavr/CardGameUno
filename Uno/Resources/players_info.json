@@ -1,22 +1,26 @@
 {
-  "2": {
-    "Nickname": "comp",
-    "Type": "AI",
+  "1": {
+    "Nickname": "1",
+    "Type": "Human",
     "Hand": {
-      "Wild WildDrawFour": 3,
-      "Red Four": 1
+      "Red Seven": 2,
+      "Green Skip": 1,
+      "Green Nine": 1,
+      "Yellow Seven": 1,
+      "Yellow Two": 1,
+      "Red Six": 1,
+      "Green Seven": 1,
+      "Blue Eight": 1
     },
     "Score": 0
   },
-  "1": {
-    "Nickname": "vera",
-    "Type": "Human",
+  "2": {
+    "Nickname": "2",
+    "Type": "AI",
     "Hand": {
-      "Red Four": 1,
-      "Red Skip": 1,
-      "Red One": 1,
-      "Yellow Seven": 1,
-      "Wild WildDrawFour": 1
+      "Red Six": 1,
+      "Green One": 2,
+      "Green DrawTwo": 1
     },
     "Score": 0
   }

@@ -57,7 +57,7 @@ public class Player
     }
 
 
-    private void UpdatePlayerHandInJson(string jsonFilePath, Card card, bool isTaking)
+    public void UpdatePlayerHandInJson(string jsonFilePath, Card card, bool isTaking)
     {
         var jsonData = File.ReadAllText(jsonFilePath);
         var playersData = JsonConvert.DeserializeObject<Dictionary<string, JObject>>(jsonData);
@@ -87,7 +87,7 @@ public class Player
                 }
                 else
                 {
-                    throw new InvalidOperationException("The specified card does not exist in the player's hand.");
+                    throw new InvalidOperationException($"The specified card does not exist in the player's hand. Card : { card.ToString() }");
                 }
             }
 

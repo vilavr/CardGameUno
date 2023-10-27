@@ -2,7 +2,7 @@ namespace MenuSystem;
 
 public class Card
 {
-    public CardColor Color { get; }
+    public CardColor Color { get; set; }
     public CardValue Value { get; }
 
     public int Score { get; } // Added Score property

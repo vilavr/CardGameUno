@@ -5,6 +5,7 @@ public class GameState
     public int Score { get; set; }
     public List<Card> AvailableCardsInDeck { get; set; }
     public List<Card> CardsInDiscard { get; set; }
+    public bool SpecialCardEffectApplied { get; set; }
     public Card? CurrentTopCard 
     { 
         get 
