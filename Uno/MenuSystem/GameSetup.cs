@@ -310,17 +310,12 @@ public class GameSetup
     }
     public void AdvanceTurn(List<Player> _players, GameState gameState)
     {
-        // Shift the player list.
-        var previousPlayer = _players[0];
-        _players.RemoveAt(0);
-        _players.Add(previousPlayer);
-
-        // Update the current turn in the game state.
-        gameState.CurrentPlayerTurn = _players[0].Id; // Assuming the 'Id' field holds the unique identifier for the player.
-
-        // Save changes to JSON, if necessary.
-        SavePlayersToJson(_players);
+        int currentIndex = _players.FindIndex(p => p.Id == gameState.CurrentPlayerTurn);
+        int nextIndex = (currentIndex + 1) % _players.Count;
+        gameState.CurrentPlayerTurn = _players[nextIndex].Id;
+        SavePlayersToJson(_players); 
     }
+
 
 
     public void ReversePlayerOrder(List<Player> _players, GameState gameState)

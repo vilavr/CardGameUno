@@ -56,12 +56,13 @@ public class GameEngine
             for (int i = 0; i < playersSnapshot.Count; i++) 
             {
                 Player currentPlayer = _players[i]; 
+                // Console.WriteLine($"Before taking turn - Current player ID: {currentPlayer.Id}");
 
-                // Update the current player in the game state
                 gameState.CurrentPlayerTurn = currentPlayer.Id; 
 
                 var playerTurn = new PlayerAction(currentPlayer, gameState);
                 playerTurn.TakeTurn();
+                // Console.WriteLine($"After taking turn - Current player ID: {currentPlayer.Id}");
 
                 if (currentPlayer.Hand.Count == 0)
                 {
@@ -73,10 +74,16 @@ public class GameEngine
                 // If the turn is over and no win condition is met, advance to the next player
                 if (playerTurn.IsTurnOver)
                 {
+                    // Console.WriteLine($"turn over value in if statement: {playerTurn.IsTurnOver}");
+                    // Console.WriteLine($"Before advancing turn - Current player ID: {currentPlayer.Id}");
+
                     _gameSetup.AdvanceTurn(_players, gameState);
+                    int nextPlayerIndex = (i + 1) % _players.Count;
+                    // Console.WriteLine($"After advancing turn - Next player ID: {_players[nextPlayerIndex].Id}");
                 }
             }
         }
+
 
         
         // ManualCardManagementTest(gameState); // Debugging adding and removing cards
