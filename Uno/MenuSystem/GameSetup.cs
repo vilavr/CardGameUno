@@ -229,7 +229,7 @@ public class GameSetup
             var preparedHand = PreparePlayerHandForSerialization(player.Hand);
 
             // Create a new PlayerInfo record with the required information
-            var info = new PlayerInfo(player.Nickname, player.Type.ToString(), preparedHand); // Convert the enum to a string here
+            var info = new PlayerInfo(player.Nickname, player.Type.ToString(), preparedHand, player.Score); // Convert the enum to a string here
 
             // Add this to our dictionary
             playerData[player.Id.ToString()] = info;
@@ -308,21 +308,25 @@ public class GameSetup
     {
         return _players[0].Id;
     }
-    public void AdvanceTurn(List<Player> _players)
+    public void AdvanceTurn(List<Player> _players, GameState gameState)
     {
         // Shift the player list.
         var previousPlayer = _players[0];
         _players.RemoveAt(0);
         _players.Add(previousPlayer);
 
-        // Save changes to JSON.
+        // Update the current turn in the game state.
+        gameState.CurrentPlayerTurn = _players[0].Id; // Assuming the 'Id' field holds the unique identifier for the player.
+
+        // Save changes to JSON, if necessary.
         SavePlayersToJson(_players);
     }
 
-    public void ReversePlayerOrder(List<Player> _players)
+
+    public void ReversePlayerOrder(List<Player> _players, GameState gameState)
     {
         _players.Reverse();
-        AdvanceTurn(_players); 
+        AdvanceTurn(_players, gameState); 
         SavePlayersToJson(_players);
     }
 }

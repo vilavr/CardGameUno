@@ -16,6 +16,7 @@ public class Player
     public int Id { get; }
     public string Nickname { get; set; }
     public EPlayerType Type { get; set; }
+    public int Score { get; set; }
 
     // This list holds the cards that the player has.
     public List<Card> Hand { get; }
@@ -27,9 +28,9 @@ public class Player
         Hand.Add(card);
     }
 
-    public IReadOnlyList<Card> ShowHand()
+    public List<Card> ShowHand()
     {
-        return Hand.AsReadOnly();
+        return Hand;
     }
 
     public void TakeCard(Card card, string jsonFilePath)
@@ -101,5 +102,16 @@ public class Player
         {
             throw new KeyNotFoundException($"Player with ID {Id} not found.");
         }
+    }
+    
+    public void AddCardAndUpdateJson(Card card, string jsonFilePath = "/home/viralavrova/cardgameuno/Uno/Resources/players_info.json")
+    {
+        if (card == null) throw new ArgumentNullException(nameof(card), "Cannot add a null card to a player's hand.");
+
+        // Add the card to the player's hand.
+        Hand.Add(card);
+
+        // Automatically update the player's hand in the JSON file.
+        UpdatePlayerHandInJson(jsonFilePath, card, true);
     }
 }

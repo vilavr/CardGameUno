@@ -21,7 +21,7 @@ public class CardsDeal
         {
             foreach (var player in _players)
             {
-                var card = _deck.DrawCard(); // by default draw from the top
+                var card = _deck.DrawCard(); 
                 player.ReceiveCard(card); 
             }
         }

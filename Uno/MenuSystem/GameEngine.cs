@@ -47,7 +47,38 @@ public class GameEngine
 
         // Add the starting card to the discard pile, which automatically sets it as the top card
         gameState.AddCardToDiscard(startingCard);
+        bool gameIsRunning = true;
+        while (gameIsRunning)
+        {
+            List<Player> playersSnapshot = new List<Player>(_players);
 
+            // Iterate through each player for their turn
+            for (int i = 0; i < playersSnapshot.Count; i++) 
+            {
+                Player currentPlayer = _players[i]; 
+
+                // Update the current player in the game state
+                gameState.CurrentPlayerTurn = currentPlayer.Id; 
+
+                var playerTurn = new PlayerAction(currentPlayer, gameState);
+                playerTurn.TakeTurn();
+
+                if (currentPlayer.Hand.Count == 0)
+                {
+                    Console.WriteLine($"{currentPlayer.Nickname} has won the game!");
+                    gameIsRunning = false;
+                    break; 
+                }
+
+                // If the turn is over and no win condition is met, advance to the next player
+                if (playerTurn.IsTurnOver)
+                {
+                    _gameSetup.AdvanceTurn(_players, gameState);
+                }
+            }
+        }
+
+        
         // ManualCardManagementTest(gameState); // Debugging adding and removing cards
         // TestTurnManager(); // Debugging players' turns 
         gameState.PrintGameState(gameState);

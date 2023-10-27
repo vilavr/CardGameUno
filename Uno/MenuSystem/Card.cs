@@ -30,4 +30,27 @@ public class Card
     {
         return Color.GetHashCode() ^ Value.GetHashCode();
     }
+    
+    public static Card DrawCard(List<Card> deck, string mode = "top")
+    {
+        if (deck == null || deck.Count == 0)
+        {
+            throw new InvalidOperationException("Cannot draw a card from an empty deck.");
+        }
+
+        Card drawnCard;
+        if (mode.Equals("random", StringComparison.OrdinalIgnoreCase))
+        {
+            int index = new Random().Next(deck.Count); // Assuming you have a random number generator for the index
+            drawnCard = deck[index];
+            deck.RemoveAt(index); // Removing the drawn card from the deck
+        }
+        else
+        {
+            drawnCard = deck[0]; // Top card
+            deck.RemoveAt(0); // Removing the top card from the deck
+        }
+
+        return drawnCard;
+    }
 }
