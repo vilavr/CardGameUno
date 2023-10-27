@@ -38,12 +38,23 @@ public class Player
         UpdatePlayerHandInJson(jsonFilePath, card, true);
     }
 
-    public bool GetRidOfCard(Card card, string jsonFilePath)
+    public bool GetRidOfCard(Card card, string jsonFilePath, GameState gameState)
     {
         var removed = Hand.Remove(card);
-        if (removed) UpdatePlayerHandInJson(jsonFilePath, card, false);
+
+        if (removed)
+        {
+            // Update the player's hand in the JSON file.
+            UpdatePlayerHandInJson(jsonFilePath, card, false);
+
+            // Remove the card from the available cards and add it to the discard pile in the game state.
+            gameState.AvailableCardsInDeck.Remove(card);
+            gameState.CardsInDiscard.Add(card);
+        }
+
         return removed;
     }
+
 
     private void UpdatePlayerHandInJson(string jsonFilePath, Card card, bool isTaking)
     {

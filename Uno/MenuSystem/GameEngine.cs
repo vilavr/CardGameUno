@@ -41,22 +41,22 @@ public class GameEngine
         // Randomly select the first player and set it in the game state
         _gameSetup.DetermineFirstPlayerAndReorder(_players);
         gameState.CurrentPlayerTurn = _players[0].Id; // Assuming Id is a property of the player
-
+        gameState.Players = _players;
         // Draw the random card to start the game and set it in the game state
         Card startingCard = _deck.DrawCard("random");
-        gameState.SetInitialTopCard(startingCard);
 
-        // Initialize the discard pile with the starting card
-        gameState.CardsInDiscard = new List<Card> { startingCard };
+        // Add the starting card to the discard pile, which automatically sets it as the top card
+        gameState.AddCardToDiscard(startingCard);
 
-
-        // For debugging or testing, you can enable the below methods:
-        // ManualCardManagementTest(); // Debugging adding and removing cards
-        // TestTurnManager();
+        // ManualCardManagementTest(gameState); // Debugging adding and removing cards
+        // TestTurnManager(); // Debugging players' turns 
+        gameState.PrintGameState(gameState);
     }
 
 
     
+
+  
     // public void TestTurnManager()
     // {
     //     Console.WriteLine("\n==== Testing Turn Manager ====");
@@ -108,15 +108,15 @@ public class GameEngine
     
     
     // Debugging adding and removing cards
-    // public Player? GetPlayerById(int playerId)
-    // {
-    //     // Using LINQ to find the player with the corresponding ID.
-    //     // This assumes that your Player class has an 'Id' property that stores the player's ID.
-    //     var player = _players.FirstOrDefault(p => p.Id == playerId);
-    //
-    //     return player;
-    // }
-    // public void ManualCardManagementTest()
+    public Player? GetPlayerById(int playerId)
+    {
+        // Using LINQ to find the player with the corresponding ID.
+        // This assumes that your Player class has an 'Id' property that stores the player's ID.
+        var player = _players.FirstOrDefault(p => p.Id == playerId);
+    
+        return player;
+    }
+    // public void ManualCardManagementTest(GameState gameState)
     // {
     //     Console.WriteLine("Manual Card Management Test Mode. Type 'exit' to quit.");
     //
@@ -176,7 +176,7 @@ public class GameEngine
     //             }
     //             else if (operation.Equals("get", StringComparison.OrdinalIgnoreCase))
     //             {
-    //                 player.GetRidOfCard(card, jsonFilePath);
+    //                 player.GetRidOfCard(card, jsonFilePath, gameState);
     //                 Console.WriteLine(
     //                     $"Card {card} removed from player {playerId}'s hand."); // Using ToString() from Card class
     //             }
@@ -184,6 +184,7 @@ public class GameEngine
     //             {
     //                 Console.WriteLine("Invalid operation. Please type 'add' or 'get'.");
     //             }
+    //             gameState.PrintGameState(gameState);
     //         }
     //         catch (Exception ex)
     //         {
