@@ -57,7 +57,7 @@
   },
   "gameSettings": {
     "NumberOfDecks": 1,
-    "NumberOfCardsPerPlayer": 6,
+    "NumberOfCardsPerPlayer": 7,
     "WinningScore": 500,
     "PlayDirection": "counterclockwise"
   }

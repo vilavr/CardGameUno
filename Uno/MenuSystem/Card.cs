@@ -5,30 +5,90 @@ public class Card
     public CardColor Color { get; }
     public CardValue Value { get; }
 
+    public int Score { get; } // Added Score property
+
     public Card(CardColor color, CardValue value)
     {
         Color = color;
         Value = value;
+        Score = CalculateCardScore(); // Calculate the score during object construction
     }
 
-    public override string ToString()
+    // Method to calculate the score of the card based on its value.
+    private int CalculateCardScore()
     {
-        // This will return a string in the format "Color Value", e.g., "Red Three"
-        return $"{Color} {Value}";
+        switch (Value)
+        {
+            case CardValue.Zero:
+                return 0;
+            case CardValue.One:
+                return 1;
+            case CardValue.Two:
+                return 2;
+            case CardValue.Three:
+                return 3;
+            case CardValue.Four:
+                return 4;
+            case CardValue.Five:
+                return 5;
+            case CardValue.Six:
+                return 6;
+            case CardValue.Seven:
+                return 7;
+            case CardValue.Eight:
+                return 8;
+            case CardValue.Nine:
+                return 9;
+            case CardValue.Skip:
+            case CardValue.Reverse:
+            case CardValue.DrawTwo:
+                return 20;
+            case CardValue.Wild:
+            case CardValue.WildDrawFour:
+                return 50;
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
     }
     
-    public override bool Equals(object obj)
+    public bool IsSpecialType()
     {
-        if (obj is Card card)
+        return Value switch
         {
-            return Color == card.Color && Value == card.Value;
-        }
-        return false;
+            CardValue.Skip => true,
+            CardValue.Reverse => true,
+            CardValue.DrawTwo => true,
+            CardValue.Wild => true,
+            CardValue.WildDrawFour => true,
+            _ => false,
+        };
+    }
+    
+    public int? GetNumericValue()
+    {
+        return IsSpecialType() ? null : (int?)Value;
     }
 
-    public override int GetHashCode()
+    public int GetCardValue()
     {
-        return Color.GetHashCode() ^ Value.GetHashCode();
+        if (IsSpecialType())
+        {
+            return Value switch
+            {
+                CardValue.Wild => 50,
+                CardValue.WildDrawFour => 50,
+                _ => 20, // Other special cards like Skip, Reverse, DrawTwo
+            };
+        }
+        else
+        {
+            return GetNumericValue() ?? 0;
+        }
+    }
+    
+    public override string ToString()
+    {
+        return $"{Color} {Value}";
     }
     
     public static Card DrawCard(List<Card> deck, string mode = "top")
