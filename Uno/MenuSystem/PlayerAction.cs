@@ -293,18 +293,45 @@ public class PlayerAction
         player.Hand.Remove(card);
         player.UpdatePlayerHandInJson(jsonFilePath, card, isTaking: false);
         gameState.AddCardToDiscard(card);
-
-        // Check if the game is won
+        
+        // Check if the round is won
         if (!player.Hand.Any())
         {
-            Console.WriteLine($"{player.Nickname} wins the game!");
-            return; // Exiting because the game is over.
+            Console.WriteLine($"{player.Nickname} wins the round!");
+
+            int totalScore = 0;
+            foreach (var p in _players)
+            {
+                if (p != player)
+                {
+                    int playerScore = p.Hand.Sum(c => c.Score);
+
+                    Console.WriteLine($"Player {p.Nickname} score before setting to zero: {playerScore}");
+                    Console.WriteLine("Their hand was:");
+                    foreach (var _card in p.Hand)
+                    {
+                        Console.WriteLine($"{_card}"); 
+                    }
+
+                    totalScore += playerScore;
+
+                    p.Score = 0; // Set other players' scores to 0.
+                    gameSetup.SavePlayersToJson(_players);
+                }
+            }
+
+            player.Score += totalScore; // Winner gets the total score.
+            gameSetup.SavePlayersToJson(_players); 
+
+            Console.WriteLine($"Total score accumulated: {totalScore}");
+            Console.WriteLine($"{player.Nickname}'s new total score: {player.Score}");
+
+            return; // The round is over.
         }
 
         // Execute special card rules
         switch (card.Value)
         {
-            // This is an example in the context of the 'Skip' card.
             case CardValue.Skip:
                 gameSetup.AdvanceTurn(_players, gameState);
                 gameSetup.AdvanceTurn(_players, gameState);
@@ -314,9 +341,7 @@ public class PlayerAction
 
 
             case CardValue.Reverse:
-                // Reverse the order of players
-                gameSetup.ReversePlayerOrder(_players, gameState); // adjusted as above
-                // No additional turn advancement needed here due to the nature of Reverse action.
+                gameSetup.ReversePlayerOrder(_players, gameState); 
                 break;
 
             case CardValue.DrawTwo:
@@ -327,14 +352,12 @@ public class PlayerAction
                 break;
 
             case CardValue.Wild:
-                // The player who played the card chooses the next color.
                 gameState.CurrentTopCard!.Color = PromptForColor(player);
                 break;
 
             case CardValue.WildDrawFour:
-                // Next player draws four cards, skips their turn, and the current player chooses the next color.
                 DrawCardsForNextPlayer(4, gameState);
-                gameState.CurrentTopCard!.Color = PromptForColor(player); // The player chooses the next color.
+                gameState.CurrentTopCard!.Color = PromptForColor(player);
                 gameSetup.AdvanceTurn(_players, gameState);
                 gameSetup.AdvanceTurn(_players, gameState);
                 gameState.SpecialCardEffectApplied = true;
