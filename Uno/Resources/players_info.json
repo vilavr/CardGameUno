@@ -1,32 +1,21 @@
 {
-  "2": {
-    "Nickname": "2",
-    "Type": "AI",
-    "Hand": {
-      "Green One": 1,
-      "Green WildDrawFour": 1,
-      "Yellow Six": 1,
-      "Yellow Three": 1,
-      "Blue Four": 1
-    },
-    "Score": 0
-  },
-  "3": {
-    "Nickname": "3",
-    "Type": "AI",
-    "Hand": {
-      "Yellow Two": 2,
-      "Yellow Six": 1,
-      "Green Three": 1,
-      "Blue Seven": 1,
-      "Yellow Wild": 1
-    },
-    "Score": 0
-  },
   "1": {
     "Nickname": "1",
     "Type": "AI",
     "Hand": {},
-    "Score": 134
+    "Score": 514
+  },
+  "2": {
+    "Nickname": "2",
+    "Type": "AI",
+    "Hand": {
+      "Yellow Four": 2,
+      "Yellow Seven": 2,
+      "Green Four": 1,
+      "Red Zero": 1,
+      "Red Three": 2,
+      "Green Seven": 1
+    },
+    "Score": 458
   }
 }

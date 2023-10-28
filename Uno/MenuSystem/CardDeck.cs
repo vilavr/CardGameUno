@@ -13,7 +13,7 @@ public class CardDeck
         Cards = new List<Card>();
     }
 
-    public List<Card> Cards { get; }
+    public List<Card> Cards { get; set;  }
 
     public void PrintDeck()
     {

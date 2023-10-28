@@ -5,18 +5,18 @@ public class PlayerAction
     private readonly GameState _gameState;
     private readonly Player _player;
 
+    private readonly string jsonplayersfilepath = "/home/viralavrova/cardgameuno/Uno/Resources/players_info.json";
+
     public PlayerAction(Player player, GameState gameState)
     {
         _player = player ?? throw new ArgumentNullException(nameof(player));
         _gameState = gameState ?? throw new ArgumentNullException(nameof(gameState));
     }
 
-    private readonly string jsonplayersfilepath = "/home/viralavrova/cardgameuno/Uno/Resources/players_info.json";
     public bool IsTurnOver { get; private set; }
 
     public void TakeTurn()
     {
-        
         Console.WriteLine($"Current Top Card: {_gameState.CurrentTopCard}");
         Console.WriteLine($"It's {_player.Nickname}'s turn");
 
@@ -31,7 +31,7 @@ public class PlayerAction
         var validMoveMade = false;
         var cardDrawn = false;
 
-        GameSetup _gameSetup = new GameSetup();
+        var _gameSetup = new GameSetup();
         // foreach (var player in _gameState.Players)
         // {
         //     if (player.Id == 1) 
@@ -104,7 +104,7 @@ public class PlayerAction
                                 continue;
                         }
 
-                        var newCard = Card.DrawCard(_gameState.AvailableCardsInDeck);
+                        var newCard = Card.DrawCard(_gameState.AvailableCardsInDeck, _gameState);
 
                         if (newCard != null)
                         {
@@ -151,7 +151,7 @@ public class PlayerAction
                     if (Console.ReadLine()?.Trim().ToLower() == "yes")
                     {
                         Console.WriteLine("You decided to pass your turn. Drawing one card.");
-                        var newCard = Card.DrawCard(_gameState.AvailableCardsInDeck);
+                        var newCard = Card.DrawCard(_gameState.AvailableCardsInDeck, _gameState);
 
                         if (newCard != null)
                         {
@@ -177,11 +177,11 @@ public class PlayerAction
         // First, check if there are any playable cards in the AI's hand.
         var playableCards = _player.Hand.Where(IsValidMove).ToList();
 
-        GameSetup _gameSetup = new GameSetup();
+        var _gameSetup = new GameSetup();
         if (!playableCards.Any())
         {
             // No valid cards to play, so the AI must draw a card.
-            var drawnCard = Card.DrawCard(_gameState.AvailableCardsInDeck);
+            var drawnCard = Card.DrawCard(_gameState.AvailableCardsInDeck, _gameState);
 
             if (drawnCard != null)
             {
@@ -227,17 +227,10 @@ public class PlayerAction
         Card? selectedCard = null;
 
         if (highValueSpecialCards.Any())
-        {
             selectedCard = highValueSpecialCards.First();
-        }
         else if (differentColorCard != null)
-        {
             selectedCard = differentColorCard;
-        }
-        else if (highValueNumberCards.Any())
-        {
-            selectedCard = highValueNumberCards.First();
-        }
+        else if (highValueNumberCards.Any()) selectedCard = highValueNumberCards.First();
 
         // If the AI has a strategic card to play, execute the move.
         if (selectedCard != null)
@@ -261,15 +254,9 @@ public class PlayerAction
 
     private bool IsValidMove(Card card)
     {
-        if (card.Color == CardColor.Wild)
-        {
-            return true;
-        }
+        if (card.Color == CardColor.Wild) return true;
 
-        if (_gameState.CurrentTopCard == null)
-        {
-            return false;
-        }
+        if (_gameState.CurrentTopCard == null) return false;
 
         return card.Color == _gameState.CurrentTopCard.Color || card.Value == _gameState.CurrentTopCard.Value;
     }
@@ -277,57 +264,42 @@ public class PlayerAction
     public Player GetNextPlayer()
     {
         // Assuming the _players list and CurrentPlayerTurn property exist in the GameState
-        int currentIndex = _gameState.Players.FindIndex(p => p.Id == _gameState.CurrentPlayerTurn);
-        int nextIndex = (currentIndex + 1) % _gameState.Players.Count; // This ensures we loop back to the start of the list.
+        var currentIndex = _gameState.Players.FindIndex(p => p.Id == _gameState.CurrentPlayerTurn);
+        var nextIndex =
+            (currentIndex + 1) % _gameState.Players.Count; // This ensures we loop back to the start of the list.
         return _gameState.Players[nextIndex];
     }
-    
+
     private void ExecuteMove(Card card, Player player, GameState gameState, GameSetup gameSetup, List<Player> _players,
         string jsonFilePath)
     {
         if (!player.Hand.Contains(card))
-        {
             throw new InvalidOperationException("Attempted to discard a card not present in hand.");
-        }
 
         player.Hand.Remove(card);
-        player.UpdatePlayerHandInJson(jsonFilePath, card, isTaking: false);
+        player.UpdatePlayerHandInJson(jsonFilePath, card, false);
         gameState.AddCardToDiscard(card);
-        
+
         // Check if the round is won
-        if (!player.Hand.Any())
+        // Inside your PlayerAction class, where you determine the round's winner.
+        if (!player.Hand.Any()) // A player wins the round if they have no cards left.
         {
             Console.WriteLine($"{player.Nickname} wins the round!");
 
-            int totalScore = 0;
-            foreach (var p in _players)
-            {
-                if (p != player)
-                {
-                    int playerScore = p.Hand.Sum(c => c.Score);
-
-                    Console.WriteLine($"Player {p.Nickname} score before setting to zero: {playerScore}");
-                    Console.WriteLine("Their hand was:");
-                    foreach (var _card in p.Hand)
-                    {
-                        Console.WriteLine($"{_card}"); 
-                    }
-
-                    totalScore += playerScore;
-
-                    p.Score = 0; // Set other players' scores to 0.
-                    gameSetup.SavePlayersToJson(_players);
-                }
-            }
-
-            player.Score += totalScore; // Winner gets the total score.
-            gameSetup.SavePlayersToJson(_players); 
+            // Calculate the total score based on the remaining players' hands.
+            var totalScore = _players.Where(p => p != player).Sum(p => p.Hand.Sum(c => c.Score));
+            player.Score += totalScore; // Winner gets the total score of all cards remaining in other players' hands.
 
             Console.WriteLine($"Total score accumulated: {totalScore}");
             Console.WriteLine($"{player.Nickname}'s new total score: {player.Score}");
 
-            return; // The round is over.
+            // Save the updated scores and proceed to the next round.
+            gameSetup.SavePlayersToJson(_players); // Save the updated scores to JSON.
+    
+            _gameState.CurrentPlayerTurn = player.Id; // The winner starts the next round.
+            return; // The round is over, so exit the method.
         }
+
 
         // Execute special card rules
         switch (card.Value)
@@ -335,13 +307,12 @@ public class PlayerAction
             case CardValue.Skip:
                 gameSetup.AdvanceTurn(_players, gameState);
                 gameSetup.AdvanceTurn(_players, gameState);
-                gameState.SpecialCardEffectApplied = true;  // Set the flag after applying the card's effect
+                gameState.SpecialCardEffectApplied = true; // Set the flag after applying the card's effect
                 break;
 
 
-
             case CardValue.Reverse:
-                gameSetup.ReversePlayerOrder(_players, gameState); 
+                gameSetup.ReversePlayerOrder(_players, gameState);
                 break;
 
             case CardValue.DrawTwo:
@@ -367,24 +338,21 @@ public class PlayerAction
 
     private void DrawCardsForNextPlayer(int numberOfCards, GameState gameState)
     {
-        Player nextPlayer = GetNextPlayer();
-        for (int i = 0; i < numberOfCards; i++)
+        var nextPlayer = GetNextPlayer();
+        for (var i = 0; i < numberOfCards; i++)
         {
-            var newCard = Card.DrawCard(gameState.AvailableCardsInDeck);
-            if (newCard != null)
-            {
-                nextPlayer.AddCardAndUpdateJson(newCard);
-            }
+            var newCard = Card.DrawCard(gameState.AvailableCardsInDeck, _gameState);
+            if (newCard != null) nextPlayer.AddCardAndUpdateJson(newCard);
         }
-        
     }
-    
+
     private CardColor PromptForColor(Player player)
     {
         if (player.Type == EPlayerType.Human)
         {
-            Console.WriteLine($"{player.Nickname}, you played a Wild card! Please choose a color (red, blue, green, yellow):");
-            string input = string.Empty;
+            Console.WriteLine(
+                $"{player.Nickname}, you played a Wild card! Please choose a color (red, blue, green, yellow):");
+            var input = string.Empty;
             while (true)
             {
                 input = Console.ReadLine()?.Trim().ToLower() ?? string.Empty;
@@ -404,17 +372,14 @@ public class PlayerAction
                 }
             }
         }
-        else // If the player is an AI
-        {
-            Random random = new Random();
-            int choice = random.Next(4);
-            return (CardColor)choice; 
-        }
+
+        // If the player is an AI
+        var random = new Random();
+        var choice = random.Next(4);
+        return (CardColor)choice;
     }
 
 
-    
-    
     // public void AddTestCardsToPlayer(Player player)
     // {
     //     // Create the action cards
@@ -436,8 +401,4 @@ public class PlayerAction
     //     // player.ReceiveCard(drawTwoCard);
     //     player.AddCardAndUpdateJson(drawTwoCard);
     // }
-
-
 }
-
-

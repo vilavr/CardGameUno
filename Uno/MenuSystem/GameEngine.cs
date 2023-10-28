@@ -6,6 +6,7 @@ public class GameEngine
     private readonly GameSettings _gameSettings;
     private readonly GameSetup _gameSetup;
     private List<Player> _players;
+    private int _currentRound;  
 
     public GameEngine(string settingsFilePath)
     {
@@ -14,39 +15,139 @@ public class GameEngine
         _gameSetup = new GameSetup();
         _deck = new CardDeck(settingsFilePath);
         _players = new List<Player>();
+        _currentRound = 0;
     }
 
     public void StartGame()
     {
-        // Create and sit players
-        var playersInfo = _gameSetup.CreatePlayers();
-        _players = _gameSetup.ParsePlayerInfo(playersInfo);
-        _players = _gameSetup.SitPlayers(_players, _gameSettings);
-        _gameSetup.PrintPlayersList(_players);
-
-        // Initialize and shuffle the deck
-        _deck.InitializeDeck();
-        Console.WriteLine($"cards in the deck: {_deck.Cards.Count}");
-        _deck.ShuffleDeck();
-        _deck.PrintDeck();
-
-        // Instantiate GameState and set the initial deck
         GameState gameState = new GameState();
-        gameState.AvailableCardsInDeck = new List<Card>(_deck.Cards);
+        bool gameIsRunning = true;
+        while (gameIsRunning)
+        {
+            
+            foreach (var player in gameState.Players)
+            {
+                if (player.Score >= _gameSettings.WinningScore)
+                {
+                    Console.WriteLine($"{player.Nickname} has reached the winning score of {_gameSettings.WinningScore}!");
+                    gameIsRunning = false;
+                    break;
+                }
+            }
+            InitializeGame(gameState);
+            // The game continues until one player reaches the winning score
+            StartRound(gameState);  
+            foreach (var player in gameState.Players)
+            {
+                if (player.Score >= _gameSettings.WinningScore)
+                {
+                    Console.WriteLine($"{player.Nickname} has reached the winning score!");
+                    gameIsRunning = false;
+                    break;
+                }
+            }
 
-        // Deal the cards to players
-        var cardDealer = new CardsDeal(_deck, _players, _gameSettings.NumberOfCardsPerPlayer);
-        cardDealer.DealCards();
+            if (gameIsRunning)
+            {
+                _currentRound++;
+                Console.WriteLine($"Round {_currentRound} completed. Starting next round...");
+            }
+        }
 
-        // Randomly select the first player and set it in the game state
-        _gameSetup.DetermineFirstPlayerAndReorder(_players);
-        gameState.CurrentPlayerTurn = _players[0].Id; // Assuming Id is a property of the player
-        gameState.Players = _players;
-        // Draw the random card to start the game and set it in the game state
-        Card startingCard = _deck.DrawCard("random");
+        // Handle end-of-game summary, cleanup, or other necessary steps
+    }
 
-        // Add the starting card to the discard pile, which automatically sets it as the top card
-        gameState.AddCardToDiscard(startingCard);
+    public void InitializeGame(GameState gameState)
+    {
+         _currentRound++;  // Increment the round number at the start of a new game
+        if (_currentRound == 1)
+        {
+            // Create and sit players
+            var playersInfo = _gameSetup.CreatePlayers();
+            _players = _gameSetup.ParsePlayerInfo(playersInfo);
+            _players = _gameSetup.SitPlayers(_players, _gameSettings);
+            _gameSetup.PrintPlayersList(_players);
+
+            // Initialize and shuffle the deck
+            _deck.InitializeDeck();
+            Console.WriteLine($"cards in the deck: {_deck.Cards.Count}");
+            _deck.ShuffleDeck();
+            // _deck.PrintDeck();
+
+            // Instantiate GameState and set the initial deck
+            gameState.AvailableCardsInDeck = new List<Card>(_deck.Cards);
+
+            // Deal the cards to players
+            var cardDealer = new CardsDeal(_deck, _players, _gameSettings.NumberOfCardsPerPlayer);
+            cardDealer.DealCards();
+            
+            // Randomly select the first player and set it in the game state
+            _gameSetup.DetermineFirstPlayerAndReorder(_players);
+            gameState.CurrentPlayerTurn = _players[0].Id; // Assuming Id is a property of the player
+            gameState.Players = _players;
+            // Draw the random card to start the game and set it in the game state
+            Card startingCard = _deck.DrawCard("random");
+
+            // Add the starting card to the discard pile, which automatically sets it as the top card
+            gameState.AddCardToDiscard(startingCard);
+        }
+        else
+        {
+            // Clear the available cards and discard pile in the game state
+            gameState.AvailableCardsInDeck.Clear();
+            gameState.CardsInDiscard.Clear();
+            _deck.Cards.Clear();
+            _deck.InitializeDeck();
+            // Collect all cards from the players' hands and the discard pile
+            // and add them back to the deck.
+            foreach (var player in _players)
+            {
+                // Add the player's cards back to the deck
+                // _deck.Cards.AddRange(player.Hand);
+        
+                // Clear the player's hand
+                player.Hand.Clear();
+            }
+
+            // Also, consider adding the discarded cards back to the deck if they aren't already there
+            _deck.Cards.AddRange(gameState.CardsInDiscard);
+    
+            // _deck.Cards = _deck.Cards.Distinct().ToList();
+
+            // Now that all cards are back in the deck, we shuffle it
+            _deck.ShuffleDeck();
+
+            // Update the game state's available cards based on the newly shuffled deck
+            gameState.AvailableCardsInDeck = new List<Card>(_deck.Cards);
+
+            // Output for debugging
+            Console.WriteLine($"cards in the deck: {_deck.Cards.Count}");
+
+            // Deal the cards to players
+            var cardDealer = new CardsDeal(_deck, _players, _gameSettings.NumberOfCardsPerPlayer);
+            cardDealer.DealCards();
+
+            // Output the count of cards in each player's hand for verification
+            foreach (Player player in _players)
+            {
+                Console.WriteLine($"Dealt cards in player's hand {player.Hand.Count}");   
+            }
+
+            // Save the current state of players into JSON
+            _gameSetup.SavePlayersToJson(_players);
+
+            // Draw a random card to start the round
+            Card startingCard = _deck.DrawCard("random");
+
+            // Add the starting card to the discard pile, which automatically sets it as the top card
+            gameState.AddCardToDiscard(startingCard);
+        }
+
+    }
+    
+    public void StartRound(GameState gameState)
+    {
+        
         bool gameIsRunning = true;
         while (gameIsRunning)
 {
@@ -82,7 +183,7 @@ public class GameEngine
         // Check for victory condition
         if (currentPlayer.Hand.Count == 0)
         {
-            Console.WriteLine($"{currentPlayer.Nickname} has won the game!");
+            // Console.WriteLine($"{currentPlayer.Nickname} has won the game!");
             gameIsRunning = false;
             break; 
         }

@@ -91,26 +91,54 @@ public class Card
         return $"{Color} {Value}";
     }
     
-    public static Card DrawCard(List<Card> deck, string mode = "top")
+    public static Card DrawCard(List<Card> deck, GameState gameState, string mode = "top")
     {
         if (deck == null || deck.Count == 0)
         {
-            throw new InvalidOperationException("Cannot draw a card from an empty deck.");
+            // No cards left in the deck. Time to reshuffle the discard pile into the deck.
+            if (gameState.CardsInDiscard.Count > 1)
+            {
+                Card topDiscard = gameState.CardsInDiscard.Last(); // Preserving the top card
+                gameState.CardsInDiscard.Remove(topDiscard); 
+
+                deck?.AddRange(gameState.CardsInDiscard);
+
+                // Clearing the discard pile, leaving only the top card
+                gameState.CardsInDiscard.Clear();
+                gameState.CardsInDiscard.Add(topDiscard); // Putting the top card back
+
+                Random rng = new Random();
+                int n = deck!.Count;
+                while (n > 1)
+                {
+                    n--;
+                    int k = rng.Next(n + 1);
+                    Card value = deck[k];
+                    deck[k] = deck[n];
+                    deck[n] = value;
+                }
+                Console.WriteLine("Empty deck, reshuffle done");
+            }
+            else
+            {
+                throw new InvalidOperationException("No cards available to draw or reshuffle.");
+            }
         }
 
         Card drawnCard;
         if (mode.Equals("random", StringComparison.OrdinalIgnoreCase))
         {
-            int index = new Random().Next(deck.Count); // Assuming you have a random number generator for the index
+            int index = new Random().Next(deck.Count); // Selecting a random card
             drawnCard = deck[index];
             deck.RemoveAt(index); // Removing the drawn card from the deck
         }
         else
         {
-            drawnCard = deck[0]; // Top card
+            drawnCard = deck[0]; // Taking the top card
             deck.RemoveAt(0); // Removing the top card from the deck
         }
 
         return drawnCard;
     }
+
 }
