@@ -29,37 +29,83 @@ public class GameEngine
             {
                 if (player.Score >= _gameSettings.WinningScore)
                 {
-                    Console.WriteLine($"{player.Nickname} has reached the winning score of {_gameSettings.WinningScore}!");
+                    Console.WriteLine(
+                        $"{player.Nickname} has reached the winning score of {_gameSettings.WinningScore}!");
                     gameIsRunning = false;
                     break;
                 }
             }
+
             InitializeGame(gameState);
             // The game continues until one player reaches the winning score
-            StartRound(gameState);  
+            bool shouldContinue = StartRound(gameState);
+            if (!shouldContinue)
+            {
+                gameIsRunning = false; // End the game if StartRound signaled to stop.
+            }
             foreach (var player in gameState.Players)
             {
                 if (player.Score >= _gameSettings.WinningScore)
                 {
                     Console.WriteLine($"{player.Nickname} has reached the winning score!");
                     gameIsRunning = false;
+                    Console.WriteLine("GAME OVER");
+
+                    Player winner = player;
+                    // Printing the total number of rounds
+                    Console.WriteLine($"Total rounds played: {_currentRound}");
+
+                    // Creating a sorted list of players based on their scores
+                    var sortedPlayers = gameState.Players.OrderByDescending(p => p.Score).ToList();
+
+                    // Printing each player's position, nickname, and score
+                    List<string> cheeringStatements = new List<string>
+                    {
+                        "Great effort!",
+                        "So close!",
+                        "Well played!",
+                        "You're amazing!",
+                        "Fantastic game!",
+                        "Keep it up!",
+                        "You were awesome!",
+                    };
+
+                    Random random = new Random(); // Random number generator
+
+                    for (int i = 0; i < sortedPlayers.Count; i++)
+                    {
+                        string message = $"{i + 1}. {sortedPlayers[i].Nickname}, {sortedPlayers[i].Score}";
+                        if (sortedPlayers[i] == winner)
+                        {
+                            message += ". Congratulations, you are the winner!!";
+                        }
+                        else
+                        {
+                            // If the player didn't win, add a random cheering statement
+                            int randomIndex = random.Next(cheeringStatements.Count); // Get a random index
+                            message += $" - {cheeringStatements[randomIndex]}"; // Append a random statement from the list
+                        }
+
+                        Console.WriteLine(message);
+                    }
                     break;
+                }
+
+                if (gameIsRunning)
+                {
+                    _currentRound++;
+                    Console.WriteLine($"Round {_currentRound} completed. Starting next round...");
                 }
             }
 
-            if (gameIsRunning)
-            {
-                _currentRound++;
-                Console.WriteLine($"Round {_currentRound} completed. Starting next round...");
-            }
+            // Handle end-of-game summary, cleanup, or other necessary steps
         }
-
-        // Handle end-of-game summary, cleanup, or other necessary steps
     }
 
     public void InitializeGame(GameState gameState)
     {
-         _currentRound++;  // Increment the round number at the start of a new game
+         _currentRound++;
+         gameState.CurrentRound = _currentRound;
         if (_currentRound == 1)
         {
             // Create and sit players
@@ -145,7 +191,7 @@ public class GameEngine
 
     }
     
-    public void StartRound(GameState gameState)
+    public bool StartRound(GameState gameState)
     {
         
         bool gameIsRunning = true;
@@ -178,7 +224,11 @@ public class GameEngine
         // Console.WriteLine($"Id after exiting the if: {currentPlayer.Id}");
         var playerTurn = new PlayerAction(currentPlayer, gameState);
         // Console.WriteLine($"Id before taking turn: {currentPlayer.Id}");
-        playerTurn.TakeTurn();
+        if (playerTurn.TakeTurn() == "s")
+        {
+            gameIsRunning = false;
+            break;
+        };
 
         // Check for victory condition
         if (currentPlayer.Hand.Count == 0)
@@ -205,9 +255,11 @@ public class GameEngine
             // Console.WriteLine($"[DEBUG] engine Turn advanced. It's now Player {_players[nextPlayerIndex].Id}'s turn.");
 
             // Update the gameState's CurrentPlayerTurn to the next player.
-            gameState.CurrentPlayerTurn = _players[nextPlayerIndex].Id;
+            // gameState.CurrentPlayerTurn = _players[nextPlayerIndex].Id;
         }
     }
+
+    
 }
 
 
@@ -217,7 +269,8 @@ public class GameEngine
         
         // ManualCardManagementTest(gameState); // Debugging adding and removing cards
         // TestTurnManager(); // Debugging players' turns 
-        gameState.PrintGameState(gameState);
+        // gameState.PrintGameState(gameState);
+        return gameIsRunning;
     }
 
 

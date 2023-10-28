@@ -5,6 +5,7 @@ public class GameState
     public List<Card> AvailableCardsInDeck { get; set; }
     public List<Card> CardsInDiscard { get; set; }
     public bool SpecialCardEffectApplied { get; set; }
+    public bool IsSaveInitiated { get; set; } = false;
     public Card? CurrentTopCard 
     { 
         get 
@@ -13,6 +14,7 @@ public class GameState
         } 
     }
     public int CurrentPlayerTurn { get; set; }
+    public int CurrentRound { get; set; }
     public List<Player> Players { get; set; } 
 
     public GameState()

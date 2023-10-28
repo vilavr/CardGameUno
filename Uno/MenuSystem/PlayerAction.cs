@@ -15,22 +15,32 @@ public class PlayerAction
 
     public bool IsTurnOver { get; private set; }
 
-    public void TakeTurn()
+    public string? TakeTurn()
     {
+        string? saving = null;
         Console.WriteLine($"Current Top Card: {_gameState.CurrentTopCard}");
         Console.WriteLine($"It's {_player.Nickname}'s turn");
 
         if (_player.Type == EPlayerType.Human)
-            HumanPlayerTurn();
+        {
+            string? saveFlag = HumanPlayerTurn();
+            if (saveFlag == "s")
+            {
+                saving = "s";
+            }
+            
+        }
         else
             AIPlayerTurn();
+
+        return saving;
     }
 
-    private void HumanPlayerTurn()
+    private string? HumanPlayerTurn()
     {
         var validMoveMade = false;
         var cardDrawn = false;
-
+        string? flagSave = null;
         var _gameSetup = new GameSetup();
         // foreach (var player in _gameState.Players)
         // {
@@ -43,7 +53,7 @@ public class PlayerAction
 
         // Check if there are any playable cards in the player's hand
         var hasPlayableCards = _player.ShowHand().Any(card => IsValidMove(card));
-
+        
         while (!validMoveMade && !IsTurnOver)
         {
             var hand = _player.ShowHand();
@@ -52,7 +62,7 @@ public class PlayerAction
 
             if (hasPlayableCards)
                 Console.WriteLine(
-                    "Actions: 'play' to play a card, 'draw' to draw from the deck, or 'pass' to skip your turn.");
+                    "Actions: 'play' to play a card, 'draw' to draw from the deck, 'pass' to skip your turn, 'save' to save your current game and exit.");
             else
                 Console.WriteLine("You have no playable cards. You must 'draw' from the deck or 'pass' your turn.");
 
@@ -163,12 +173,34 @@ public class PlayerAction
                     }
 
                     break;
+                
+                case "save":
+                    // New save game logic
+                    try
+                    {
+                        GameSaver gameSaver = new GameSaver();
+                        gameSaver.SaveGame(_gameState); // assuming _gameState is your GameState object
+                        Console.WriteLine("Game has been saved successfully.");
+                        IsTurnOver = true;
+                        validMoveMade = true;
+                        flagSave = "s";
+                        // You might want to decide whether saving the game should end the current turn or not.
+                        // If it should, then you might set IsTurnOver = true; here.
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"An error occurred while saving the game: {ex.Message}");
+                        // Optionally, log the exception or handle it accordingly.
+                    }
+                    break;
 
                 default:
                     Console.WriteLine("Invalid action. Please type 'play', 'draw', or 'pass'.");
                     break;
             }
         }
+
+        return flagSave;
     }
 
 

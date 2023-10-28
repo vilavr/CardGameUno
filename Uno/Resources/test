@@ -1,0 +1,675 @@
+{
+  "Players": {
+    "1": {
+      "Nickname": "1",
+      "Type": "Human",
+      "Hand": {
+        "Green Six": 1,
+        "Red Skip": 1,
+        "Green Two": 1,
+        "Blue Five": 1,
+        "Red Eight": 1,
+        "Green Three": 1,
+        "Yellow Zero": 1
+      },
+      "Score": 0
+    },
+    "2": {
+      "Nickname": "2",
+      "Type": "AI",
+      "Hand": {
+        "Green Reverse": 1,
+        "Green Eight": 1,
+        "Green Skip": 1,
+        "Green Three": 1,
+        "Blue One": 1,
+        "Red Eight": 1,
+        "Yellow Four": 1
+      },
+      "Score": 0
+    }
+  },
+  "Settings": {
+    "cardSettings": {
+      "Red_0": 2,
+      "Red_1": 2,
+      "Red_2": 2,
+      "Red_3": 2,
+      "Red_4": 2,
+      "Red_5": 2,
+      "Red_6": 2,
+      "Red_7": 2,
+      "Red_8": 2,
+      "Red_9": 2,
+      "Red_DrawTwo": 2,
+      "Red_Skip": 2,
+      "Red_Reverse": 2,
+      "Yellow_0": 2,
+      "Yellow_1": 2,
+      "Yellow_2": 2,
+      "Yellow_3": 2,
+      "Yellow_4": 2,
+      "Yellow_5": 2,
+      "Yellow_6": 2,
+      "Yellow_7": 2,
+      "Yellow_8": 2,
+      "Yellow_9": 2,
+      "Yellow_DrawTwo": 2,
+      "Yellow_Skip": 2,
+      "Yellow_Reverse": 2,
+      "Green_0": 2,
+      "Green_1": 2,
+      "Green_2": 2,
+      "Green_3": 2,
+      "Green_4": 2,
+      "Green_5": 2,
+      "Green_6": 2,
+      "Green_7": 2,
+      "Green_8": 2,
+      "Green_9": 2,
+      "Green_DrawTwo": 2,
+      "Green_Skip": 2,
+      "Green_Reverse": 2,
+      "Blue_0": 2,
+      "Blue_1": 2,
+      "Blue_2": 2,
+      "Blue_3": 2,
+      "Blue_4": 2,
+      "Blue_5": 2,
+      "Blue_6": 2,
+      "Blue_7": 2,
+      "Blue_8": 2,
+      "Blue_9": 2,
+      "Blue_DrawTwo": 2,
+      "Blue_Skip": 2,
+      "Blue_Reverse": 2,
+      "Wild": 4,
+      "Wild_DrawFour": 4
+    },
+    "gameSettings": {
+      "NumberOfDecks": 1,
+      "NumberOfCardsPerPlayer": 7,
+      "WinningScore": 500,
+      "PlayDirection": "counterclockwise"
+    }
+  },
+  "Game": {
+    "AvailableCardsInDeck": [
+      {
+        "Color": 2,
+        "Value": 11,
+        "Score": 20
+      },
+      {
+        "Color": 2,
+        "Value": 6,
+        "Score": 6
+      },
+      {
+        "Color": 2,
+        "Value": 8,
+        "Score": 8
+      },
+      {
+        "Color": 0,
+        "Value": 10,
+        "Score": 20
+      },
+      {
+        "Color": 2,
+        "Value": 10,
+        "Score": 20
+      },
+      {
+        "Color": 2,
+        "Value": 2,
+        "Score": 2
+      },
+      {
+        "Color": 2,
+        "Value": 3,
+        "Score": 3
+      },
+      {
+        "Color": 3,
+        "Value": 5,
+        "Score": 5
+      },
+      {
+        "Color": 3,
+        "Value": 1,
+        "Score": 1
+      },
+      {
+        "Color": 0,
+        "Value": 8,
+        "Score": 8
+      },
+      {
+        "Color": 0,
+        "Value": 8,
+        "Score": 8
+      },
+      {
+        "Color": 2,
+        "Value": 3,
+        "Score": 3
+      },
+      {
+        "Color": 1,
+        "Value": 4,
+        "Score": 4
+      },
+      {
+        "Color": 1,
+        "Value": 0,
+        "Score": 0
+      },
+      {
+        "Color": 0,
+        "Value": 3,
+        "Score": 3
+      },
+      {
+        "Color": 3,
+        "Value": 3,
+        "Score": 3
+      },
+      {
+        "Color": 1,
+        "Value": 3,
+        "Score": 3
+      },
+      {
+        "Color": 3,
+        "Value": 2,
+        "Score": 2
+      },
+      {
+        "Color": 3,
+        "Value": 2,
+        "Score": 2
+      },
+      {
+        "Color": 4,
+        "Value": 13,
+        "Score": 50
+      },
+      {
+        "Color": 3,
+        "Value": 4,
+        "Score": 4
+      },
+      {
+        "Color": 0,
+        "Value": 4,
+        "Score": 4
+      },
+      {
+        "Color": 1,
+        "Value": 1,
+        "Score": 1
+      },
+      {
+        "Color": 3,
+        "Value": 11,
+        "Score": 20
+      },
+      {
+        "Color": 4,
+        "Value": 14,
+        "Score": 50
+      },
+      {
+        "Color": 2,
+        "Value": 12,
+        "Score": 20
+      },
+      {
+        "Color": 2,
+        "Value": 0,
+        "Score": 0
+      },
+      {
+        "Color": 0,
+        "Value": 9,
+        "Score": 9
+      },
+      {
+        "Color": 3,
+        "Value": 11,
+        "Score": 20
+      },
+      {
+        "Color": 3,
+        "Value": 0,
+        "Score": 0
+      },
+      {
+        "Color": 0,
+        "Value": 12,
+        "Score": 20
+      },
+      {
+        "Color": 2,
+        "Value": 7,
+        "Score": 7
+      },
+      {
+        "Color": 0,
+        "Value": 3,
+        "Score": 3
+      },
+      {
+        "Color": 1,
+        "Value": 7,
+        "Score": 7
+      },
+      {
+        "Color": 3,
+        "Value": 12,
+        "Score": 20
+      },
+      {
+        "Color": 3,
+        "Value": 6,
+        "Score": 6
+      },
+      {
+        "Color": 3,
+        "Value": 1,
+        "Score": 1
+      },
+      {
+        "Color": 2,
+        "Value": 1,
+        "Score": 1
+      },
+      {
+        "Color": 3,
+        "Value": 10,
+        "Score": 20
+      },
+      {
+        "Color": 2,
+        "Value": 8,
+        "Score": 8
+      },
+      {
+        "Color": 0,
+        "Value": 7,
+        "Score": 7
+      },
+      {
+        "Color": 4,
+        "Value": 13,
+        "Score": 50
+      },
+      {
+        "Color": 0,
+        "Value": 5,
+        "Score": 5
+      },
+      {
+        "Color": 2,
+        "Value": 5,
+        "Score": 5
+      },
+      {
+        "Color": 0,
+        "Value": 1,
+        "Score": 1
+      },
+      {
+        "Color": 1,
+        "Value": 8,
+        "Score": 8
+      },
+      {
+        "Color": 3,
+        "Value": 12,
+        "Score": 20
+      },
+      {
+        "Color": 1,
+        "Value": 8,
+        "Score": 8
+      },
+      {
+        "Color": 0,
+        "Value": 4,
+        "Score": 4
+      },
+      {
+        "Color": 2,
+        "Value": 10,
+        "Score": 20
+      },
+      {
+        "Color": 1,
+        "Value": 0,
+        "Score": 0
+      },
+      {
+        "Color": 1,
+        "Value": 1,
+        "Score": 1
+      },
+      {
+        "Color": 1,
+        "Value": 10,
+        "Score": 20
+      },
+      {
+        "Color": 1,
+        "Value": 9,
+        "Score": 9
+      },
+      {
+        "Color": 0,
+        "Value": 0,
+        "Score": 0
+      },
+      {
+        "Color": 3,
+        "Value": 4,
+        "Score": 4
+      },
+      {
+        "Color": 3,
+        "Value": 9,
+        "Score": 9
+      },
+      {
+        "Color": 3,
+        "Value": 7,
+        "Score": 7
+      },
+      {
+        "Color": 0,
+        "Value": 2,
+        "Score": 2
+      },
+      {
+        "Color": 4,
+        "Value": 14,
+        "Score": 50
+      },
+      {
+        "Color": 3,
+        "Value": 6,
+        "Score": 6
+      },
+      {
+        "Color": 2,
+        "Value": 0,
+        "Score": 0
+      },
+      {
+        "Color": 1,
+        "Value": 5,
+        "Score": 5
+      },
+      {
+        "Color": 2,
+        "Value": 5,
+        "Score": 5
+      },
+      {
+        "Color": 1,
+        "Value": 2,
+        "Score": 2
+      },
+      {
+        "Color": 1,
+        "Value": 11,
+        "Score": 20
+      },
+      {
+        "Color": 1,
+        "Value": 3,
+        "Score": 3
+      },
+      {
+        "Color": 4,
+        "Value": 13,
+        "Score": 50
+      },
+      {
+        "Color": 4,
+        "Value": 14,
+        "Score": 50
+      },
+      {
+        "Color": 2,
+        "Value": 7,
+        "Score": 7
+      },
+      {
+        "Color": 0,
+        "Value": 11,
+        "Score": 20
+      },
+      {
+        "Color": 0,
+        "Value": 0,
+        "Score": 0
+      },
+      {
+        "Color": 1,
+        "Value": 6,
+        "Score": 6
+      },
+      {
+        "Color": 0,
+        "Value": 11,
+        "Score": 20
+      },
+      {
+        "Color": 1,
+        "Value": 6,
+        "Score": 6
+      },
+      {
+        "Color": 0,
+        "Value": 6,
+        "Score": 6
+      },
+      {
+        "Color": 1,
+        "Value": 10,
+        "Score": 20
+      },
+      {
+        "Color": 2,
+        "Value": 12,
+        "Score": 20
+      },
+      {
+        "Color": 2,
+        "Value": 2,
+        "Score": 2
+      },
+      {
+        "Color": 1,
+        "Value": 7,
+        "Score": 7
+      },
+      {
+        "Color": 2,
+        "Value": 9,
+        "Score": 9
+      },
+      {
+        "Color": 0,
+        "Value": 7,
+        "Score": 7
+      },
+      {
+        "Color": 3,
+        "Value": 9,
+        "Score": 9
+      },
+      {
+        "Color": 1,
+        "Value": 12,
+        "Score": 20
+      },
+      {
+        "Color": 3,
+        "Value": 8,
+        "Score": 8
+      },
+      {
+        "Color": 1,
+        "Value": 4,
+        "Score": 4
+      },
+      {
+        "Color": 0,
+        "Value": 10,
+        "Score": 20
+      },
+      {
+        "Color": 1,
+        "Value": 11,
+        "Score": 20
+      },
+      {
+        "Color": 1,
+        "Value": 2,
+        "Score": 2
+      },
+      {
+        "Color": 3,
+        "Value": 10,
+        "Score": 20
+      },
+      {
+        "Color": 0,
+        "Value": 5,
+        "Score": 5
+      },
+      {
+        "Color": 2,
+        "Value": 1,
+        "Score": 1
+      },
+      {
+        "Color": 1,
+        "Value": 5,
+        "Score": 5
+      },
+      {
+        "Color": 0,
+        "Value": 1,
+        "Score": 1
+      },
+      {
+        "Color": 4,
+        "Value": 14,
+        "Score": 50
+      },
+      {
+        "Color": 3,
+        "Value": 5,
+        "Score": 5
+      },
+      {
+        "Color": 3,
+        "Value": 7,
+        "Score": 7
+      },
+      {
+        "Color": 0,
+        "Value": 6,
+        "Score": 6
+      },
+      {
+        "Color": 2,
+        "Value": 11,
+        "Score": 20
+      },
+      {
+        "Color": 1,
+        "Value": 12,
+        "Score": 20
+      },
+      {
+        "Color": 0,
+        "Value": 2,
+        "Score": 2
+      },
+      {
+        "Color": 3,
+        "Value": 8,
+        "Score": 8
+      },
+      {
+        "Color": 2,
+        "Value": 4,
+        "Score": 4
+      },
+      {
+        "Color": 0,
+        "Value": 9,
+        "Score": 9
+      },
+      {
+        "Color": 2,
+        "Value": 9,
+        "Score": 9
+      },
+      {
+        "Color": 0,
+        "Value": 12,
+        "Score": 20
+      },
+      {
+        "Color": 4,
+        "Value": 13,
+        "Score": 50
+      },
+      {
+        "Color": 2,
+        "Value": 4,
+        "Score": 4
+      },
+      {
+        "Color": 3,
+        "Value": 3,
+        "Score": 3
+      },
+      {
+        "Color": 1,
+        "Value": 9,
+        "Score": 9
+      },
+      {
+        "Color": 3,
+        "Value": 0,
+        "Score": 0
+      },
+      {
+        "Color": 2,
+        "Value": 6,
+        "Score": 6
+      }
+    ],
+    "CardsInDiscard": [
+      {
+        "Color": 2,
+        "Value": 7,
+        "Score": 7
+      }
+    ],
+    "TopCard": {
+      "Color": 2,
+      "Value": 7,
+      "Score": 7
+    },
+    "SpecialCardEffectApplied": false,
+    "CurrentPlayerTurn": 1,
+    "CurrentRound": 1
+  }
+}
