@@ -33,7 +33,7 @@ public class GameEngine
                     break;
                 }
 
-            InitializeGame(gameState);
+            InitializeGame(ref gameState);
             // The game continues until one player reaches the winning score
             var shouldContinue = StartRound(gameState);
             if (!shouldContinue) gameIsRunning = false; // End the game if StartRound signaled to stop.
@@ -98,12 +98,12 @@ public class GameEngine
         }
     }
 
-    public void InitializeGame(GameState gameState)
+    public void InitializeGame(ref GameState gameState)
     {
-        // GameSaver gameSaver = new GameSaver();
-        // string selectedFilePath;
-        // bool didUserSaveGame = gameSaver.PromptUserForLoad(out selectedFilePath);
-        bool didUserSaveGame = false;
+        GameSaver gameSaver = new GameSaver();
+        string selectedFilePath;
+        bool didUserSaveGame = gameSaver.PromptUserForLoad(out selectedFilePath);
+        // bool didUserSaveGame = false;
         if (!didUserSaveGame)
         {
 
@@ -172,16 +172,16 @@ public class GameEngine
                 gameState.AddCardToDiscard(startingCard);
             }
         }
-        // else
-        // {
-        //     gameState = gameSaver.LoadGame(selectedFilePath)!;
-        //     Console.WriteLine("Game state in game engine: ");
-        //     gameState.PrintGameState(gameState);
-        //     _deck.InitializeDeck();
-        //     _players.Clear();
-        //     _players = gameState.Players;
-        //     Console.WriteLine("Game loaded. Resuming from saved state...");
-        // }
+        else
+        {
+            gameState = gameSaver.LoadGame(selectedFilePath)!;
+            Console.WriteLine("Game state in game engine: ");
+            gameState.PrintGameState(gameState);
+            _deck.InitializeDeck();
+            _players.Clear();
+            _players = gameState.Players;
+            Console.WriteLine("Game loaded. Resuming from saved state...");
+        }
     }
 
     public bool StartRound(GameState gameState)

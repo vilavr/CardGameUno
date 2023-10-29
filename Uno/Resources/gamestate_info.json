@@ -6,7 +6,6 @@
       "Hand": {
         "Blue Seven": 1,
         "Green Seven": 1,
-        "Wild Wild": 1,
         "Green DrawTwo": 1,
         "Green Reverse": 1,
         "Blue Skip": 1
@@ -18,7 +17,6 @@
       "Type": "AI",
       "Hand": {
         "Red Zero": 1,
-        "Green Eight": 1,
         "Blue Four": 1,
         "Blue One": 1,
         "Blue Five": 1,
@@ -674,12 +672,27 @@
         "Color": 0,
         "Value": 5,
         "Score": 5
+      },
+      {
+        "Color": 0,
+        "Value": 3,
+        "Score": 3
+      },
+      {
+        "Color": 2,
+        "Value": 13,
+        "Score": 50
+      },
+      {
+        "Color": 2,
+        "Value": 8,
+        "Score": 8
       }
     ],
     "TopCard": {
-      "Color": 0,
-      "Value": 3,
-      "Score": 3
+      "Color": 2,
+      "Value": 8,
+      "Score": 8
     },
     "SpecialCardEffectApplied": false,
     "CurrentPlayerTurn": 1,
