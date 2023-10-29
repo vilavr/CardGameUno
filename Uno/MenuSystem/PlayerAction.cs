@@ -344,7 +344,7 @@ public class PlayerAction
 
 
             case CardValue.Reverse:
-                gameSetup.ReversePlayerOrder(_players, gameState);
+                gameSetup.ReversePlayerOrder(_players, ref gameState);
                 break;
 
             case CardValue.DrawTwo:

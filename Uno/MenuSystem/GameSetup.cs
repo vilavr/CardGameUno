@@ -318,7 +318,7 @@ public class GameSetup
 
 
 
-    public void ReversePlayerOrder(List<Player> _players, GameState gameState)
+    public void ReversePlayerOrder(List<Player> _players, ref GameState gameState)
     {
         _players.Reverse();
         AdvanceTurn(_players, gameState); 

@@ -143,11 +143,11 @@ public class GameSaver
         {
             string playersInfo = JsonConvert.SerializeObject(loadedData.Players);
             File.WriteAllText(_playersInfoPath,
-                playersInfo); // Assume _playersInfoPath is defined elsewhere in your class
+                playersInfo); 
 
             string settingsInfo = JsonConvert.SerializeObject(loadedData.Settings);
             File.WriteAllText(_settingsInfoPath,
-                settingsInfo); // Assume _settingsInfoPath is defined elsewhere in your class
+                settingsInfo); 
         }
         catch (Exception ex)
         {
@@ -196,11 +196,16 @@ public class GameSaver
 
                 // Convert hand cards
                 var handCards = new List<Card>();
-                foreach (var cardKvp in playerData.Hand)
+                foreach (var cardEntry in playerData.Hand)
                 {
-                    string cardName = cardKvp.Name;
-                    Card card = CreateCardFromName(cardName);
-                    handCards.Add(card);
+                    string cardName = cardEntry.Name; 
+                    int cardQuantity = (int)cardEntry.Value; 
+                    
+                    for (int i = 0; i < cardQuantity; i++)
+                    {
+                        Card card = CreateCardFromName(cardName); 
+                        handCards.Add(card);
+                    }
                 }
 
                 player.Hand = handCards; 
@@ -221,7 +226,7 @@ public class GameSaver
             Console.WriteLine($"Game state created successfully with {gameState.Players?.Count} player(s).");
             Console.WriteLine($"Game loaded from \"{Path.GetFileName(filePath)}\".");
 
-            gameState.PrintGameState(gameState);
+            // gameState.PrintGameState(gameState);
             return gameState;
         }
         catch (Exception ex)

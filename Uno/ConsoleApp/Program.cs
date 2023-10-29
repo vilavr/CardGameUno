@@ -1,5 +1,5 @@
 ﻿using MenuSystem;
-
+Menu mainMenu = null!;
 var numberOfDecksPrompt = new GameSettingsCustomization<int>(
     "Enter the number of decks (1-4): ",
     Enumerable.Range(1, 4).ToList(), // Allowing 1 to 4 decks for variety.
@@ -191,7 +191,7 @@ var settingsChoice = new Menu("Choose what settings you want to continue with", 
 
             // Start the game
             gameEngine.StartGame();
-
+            mainMenu.Run();
 
             return null;
         }
@@ -244,7 +244,7 @@ var settingsChoice = new Menu("Choose what settings you want to continue with", 
 
             // Start the game
             gameEngine.StartGame();
-
+            mainMenu.Run();
 
             return null;
         }
@@ -263,19 +263,19 @@ var settingsChoice = new Menu("Choose what settings you want to continue with", 
 
             // Start the game
             gameEngine.StartGame();
-
+            mainMenu.Run();
 
             return null;
         }
     }
 }, EMenuLevel.Second);
-var mainMenu = new Menu("Main menu", new List<MenuItem>
+mainMenu = new Menu("Main menu", new List<MenuItem>
 {
     new()
     {
         Shortcut = "1",
         MenuLabel = "Start game",
-        MethodToRun = settingsChoice.Run // Assumes this method initiates a new game.
+        MethodToRun = settingsChoice.Run 
     },
     new()
     {
@@ -308,7 +308,7 @@ var mainMenu = new Menu("Main menu", new List<MenuItem>
                     var gameEngine = new GameEngine(settingsFilePath);
 
                     // Start the game
-                    gameEngine.StartGame();
+                    gameEngine.StartGame(didUserSaveGame: true, savedGameFilePath: filePath);
                 }
                 else
                 {
