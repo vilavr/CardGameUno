@@ -19,7 +19,7 @@ public class Player
     public int Score { get; set; }
 
     // This list holds the cards that the player has.
-    public List<Card> Hand { get; }
+    public List<Card> Hand { get; set; }
 
     public void ReceiveCard(Card card)
     {

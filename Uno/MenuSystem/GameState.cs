@@ -5,14 +5,28 @@ public class GameState
     public List<Card> AvailableCardsInDeck { get; set; }
     public List<Card> CardsInDiscard { get; set; }
     public bool SpecialCardEffectApplied { get; set; }
-    public bool IsSaveInitiated { get; set; } = false;
-    public Card? CurrentTopCard 
-    { 
+    private Card? _currentTopCard;  // backing field
+
+    public Card? CurrentTopCard
+    {
         get 
         {
-            return CardsInDiscard?.LastOrDefault();
-        } 
+            return _currentTopCard;
+        }
+        set 
+        {
+            _currentTopCard = value;
+            // Optionally, if the top card still needs to be a part of CardsInDiscard, add it to the list.
+            if (CardsInDiscard != null && value != null) 
+            {
+                if (!CardsInDiscard.Contains(value)) // or some other appropriate check
+                {
+                    CardsInDiscard.Add(value);
+                }
+            }
+        }
     }
+
     public int CurrentPlayerTurn { get; set; }
     public int CurrentRound { get; set; }
     public List<Player> Players { get; set; } 

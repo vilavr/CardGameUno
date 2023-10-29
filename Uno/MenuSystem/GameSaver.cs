@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 
 namespace MenuSystem;
@@ -18,7 +19,7 @@ public class GameSaver
         var targetDirectory = "/home/viralavrova/cardgameuno/Uno/Resources/";
 
         if (!Directory.Exists(targetDirectory))
-            Directory.CreateDirectory(targetDirectory); 
+            Directory.CreateDirectory(targetDirectory);
 
         var gameStateFilePath = Path.Combine(targetDirectory,
             string.IsNullOrEmpty(inputFileName) ? "gamestate_info.json" : inputFileName);
@@ -53,4 +54,238 @@ public class GameSaver
             Console.WriteLine($"An error occurred while saving the game: {ex.Message}");
         }
     }
+
+
+    private readonly string _directoryPath = "/home/viralavrova/cardgameuno/Uno/Resources";
+
+    public bool PromptUserForLoad(out string selectedFilePath)
+    {
+        var saveFiles = Directory.GetFiles(_directoryPath, "*.json");
+
+        if (saveFiles.Length == 0)
+        {
+            Console.WriteLine("No save files found!");
+            selectedFilePath = string.Empty;
+            return false;
+        }
+
+        Console.WriteLine("Available save files:");
+        for (int i = 0; i < saveFiles.Length; i++)
+        {
+            Console.WriteLine($"{i + 1}: {Path.GetFileName(saveFiles[i])}");
+        }
+
+        Console.WriteLine("Enter the number of the file you want to load:");
+        int fileNumber;
+        bool isValidInput = int.TryParse(Console.ReadLine(), out fileNumber);
+
+        if (!isValidInput || fileNumber < 1 || fileNumber > saveFiles.Length)
+        {
+            Console.WriteLine("Invalid selection.");
+            selectedFilePath = string.Empty;
+            return false;
+        }
+
+        selectedFilePath = saveFiles[fileNumber - 1];
+        return true;
+    }
+
+    public GameState? LoadGame(string filePath)
+    {
+        Console.WriteLine($"Attempting to load game from \"{filePath}\"...");
+
+        if (!File.Exists(filePath))
+        {
+            Console.WriteLine("Error: The specified file does not exist.");
+            return null;
+        }
+
+        string fileContent;
+        try
+        {
+            fileContent = File.ReadAllText(filePath);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"An error occurred while reading the file: {ex.Message}");
+            return null;
+        }
+
+        if (string.IsNullOrWhiteSpace(fileContent))
+        {
+            Console.WriteLine("Error: The file is empty.");
+            return null;
+        }
+
+        Console.WriteLine("File read successfully. Attempting to deserialize the content...");
+
+        dynamic? loadedData = null;
+        try
+        {
+            loadedData = JsonConvert.DeserializeObject(fileContent);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"An error occurred during deserialization: {ex.Message}");
+            return null;
+        }
+
+        if (loadedData == null)
+        {
+            Console.WriteLine("Failed to deserialize the game data. The save file might be corrupted.");
+            return null;
+        }
+
+        Console.WriteLine("Deserialization successful. Extracting game segments...");
+
+        // First, write the content of 'Players' and 'Settings' to their respective files
+        try
+        {
+            string playersInfo = JsonConvert.SerializeObject(loadedData.Players);
+            File.WriteAllText(_playersInfoPath,
+                playersInfo); // Assume _playersInfoPath is defined elsewhere in your class
+
+            string settingsInfo = JsonConvert.SerializeObject(loadedData.Settings);
+            File.WriteAllText(_settingsInfoPath,
+                settingsInfo); // Assume _settingsInfoPath is defined elsewhere in your class
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"An error occurred while extracting segments: {ex.Message}");
+            return null;
+        }
+
+        Console.WriteLine("Segments extracted. Preparing to construct game state...");
+
+        try
+        {
+            // Parse 'Players' from the 'Players' segment
+
+            var playersJson = JsonConvert.SerializeObject(loadedData.Players);
+            var settingsJson = JsonConvert.SerializeObject(loadedData.Settings); // If you use settings somewhere else
+
+            if (string.IsNullOrWhiteSpace(playersJson))
+            {
+                Console.WriteLine("Error: No players' information available.");
+                return null;
+            }
+
+            Console.WriteLine("Segments extracted. Preparing to construct game state...");
+
+            // Deserialize and convert the players' information.
+            var deserializedPlayers = JsonConvert.DeserializeObject<Dictionary<string, dynamic>>(playersJson);
+            if (deserializedPlayers == null)
+            {
+                Console.WriteLine("Error: Could not parse players' information.");
+                return null;
+            }
+
+            var players = new List<Player>();
+            foreach (var kvp in deserializedPlayers)
+            {
+                string playerIdString = kvp.Key;
+                dynamic playerData = kvp.Value;
+
+                int playerId = int.Parse(playerIdString);
+                string nickname = playerData.Nickname;
+                EPlayerType playerType = (EPlayerType)Enum.Parse(typeof(EPlayerType), (string)playerData.Type);
+
+                var player = new Player(playerId, nickname, playerType)
+                {
+                    Score = playerData.Score
+                };
+
+                // Convert hand cards
+                var handCards = new List<Card>();
+                foreach (var cardKvp in playerData.Hand)
+                {
+                    string cardName = cardKvp.Name;
+                    Card card = CreateCardFromName(cardName);
+                    handCards.Add(card);
+                }
+
+                player.Hand = handCards; // Assuming Hand is a settable property
+                players.Add(player);
+            }
+
+            // Now, you can create the new GameState from the 'Game' segment
+            GameState gameState = new GameState
+            {
+                AvailableCardsInDeck = loadedData.Game.AvailableCardsInDeck.ToObject<List<Card>>(),
+                CardsInDiscard = loadedData.Game.CardsInDiscard.ToObject<List<Card>>(),
+                CurrentTopCard = loadedData.Game.TopCard.ToObject<Card>(),
+                SpecialCardEffectApplied = loadedData.Game.SpecialCardEffectApplied,
+                CurrentPlayerTurn = loadedData.Game.CurrentPlayerTurn,
+                CurrentRound = loadedData.Game.CurrentRound,
+                Players = players // Set the players from the deserialized 'Players' segment
+            };
+
+            // If you need to apply settings from the 'Settings' segment to your game state or game settings,
+            // you would deserialize the settings and then apply them here. For example:
+            // var settings = JsonConvert.DeserializeObject<GameSettings>(File.ReadAllText(_settingsInfoPath));
+            // ApplySettingsToGameState(gameState, settings);
+
+            Console.WriteLine($"Game state created successfully with {gameState.Players?.Count} player(s).");
+            Console.WriteLine($"Game loaded from \"{Path.GetFileName(filePath)}\".");
+
+            return gameState;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"An error occurred while constructing the game state: {ex.Message}");
+            Console.WriteLine(ex.StackTrace);
+            return null;
+        }
+    }
+
+
+    private List<Card> ConvertHandToList(Dictionary<string, int> handDict)
+    {
+        var cardList = new List<Card>();
+        foreach (var item in handDict)
+        {
+            var cardName = item.Key;
+            var quantity = item.Value;
+
+            for (int i = 0; i < quantity; i++)
+            {
+                // Creation of a Card object depends on your implementation.
+                // You need to decide how you're mapping strings to actual Card objects.
+                var card = CreateCardFromName(cardName); // This is a method you should implement.
+                cardList.Add(card);
+            }
+        }
+        return cardList;
+    }
+    
+    private Card CreateCardFromName(string cardName)
+    {
+        // Assume cardName is something like "Blue Seven" or "Red Skip"
+        string[] parts = cardName.Split(' ');
+        if (parts.Length != 2)
+        {
+            throw new ArgumentException("Card name is not in the expected format.");
+        }
+
+        CardColor cardColor;
+        if (!Enum.TryParse(parts[0], true, out cardColor))
+        {
+            throw new ArgumentException("Invalid color in card name.");
+        }
+
+        CardValue cardValue;
+        if (!Enum.TryParse(parts[1], true, out cardValue))
+        {
+            // For values like "DrawTwo", "WildDrawFour", you might need to adjust the string before parsing
+            string adjustedValue = Regex.Replace(parts[1], "(\\B[A-Z])", " $1");
+            if (!Enum.TryParse(adjustedValue, true, out cardValue))
+            {
+                throw new ArgumentException("Invalid value in card name.");
+            }
+        }
+
+        return new Card(cardColor, cardValue); // Adjust if your Card constructor is different
+    }
+
 }
+

@@ -275,7 +275,7 @@ var mainMenu = new Menu("Main menu", new List<MenuItem>
     {
         Shortcut = "1",
         MenuLabel = "Start game",
-        MethodToRun = settingsChoice.Run
+        MethodToRun = settingsChoice.Run // Assumes this method initiates a new game.
     },
     new()
     {
@@ -291,9 +291,41 @@ var mainMenu = new Menu("Main menu", new List<MenuItem>
     new()
     {
         Shortcut = "3",
-        MenuLabel = "Load game"
+        MenuLabel = "Load game",
+        MethodToRun = () =>
+        {
+            // Creating the instance responsible for save/load operations.
+            var gameSaver = new GameSaver();
+
+            // Prompting the user to select a save file and obtaining the file path.
+            if (gameSaver.PromptUserForLoad(out string filePath))
+            {
+                GameState? gameState = gameSaver.LoadGame(filePath);
+
+                if (gameState != null)
+                {
+                    string settingsFilePath = "/home/viralavrova/cardgameuno/Uno/Resources/settings_info.json";
+                    var gameEngine = new GameEngine(settingsFilePath);
+
+                    // Start the game
+                    gameEngine.StartGame();
+                }
+                else
+                {
+                    Console.WriteLine("Error loading game. Please start a new game or try loading again.");
+                    // You could return to the main menu or handle this situation differently depending on your design.
+                }
+            }
+            else
+            {
+                Console.WriteLine("Load game cancelled or no save files available. Returning to main menu.");
+                // Handling the situation where no file is selected or no saves are available.
+            }
+            return null; // Return 'null' to signify the end of this menu action, assuming it aligns with your method's expectations.
+        }
     }
 });
+
 
 while (true)
 {
