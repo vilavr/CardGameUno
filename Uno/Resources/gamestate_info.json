@@ -6,7 +6,6 @@
       "Hand": {
         "Blue Seven": 1,
         "Green Seven": 1,
-        "Red Nine": 1,
         "Wild Wild": 1,
         "Green DrawTwo": 1,
         "Green Reverse": 1,
@@ -22,7 +21,6 @@
         "Green Eight": 1,
         "Blue Four": 1,
         "Blue One": 1,
-        "Red Five": 1,
         "Blue Five": 1,
         "Blue Reverse": 1
       },
@@ -661,6 +659,21 @@
         "Color": 0,
         "Value": 3,
         "Score": 3
+      },
+      {
+        "Color": 0,
+        "Value": 3,
+        "Score": 3
+      },
+      {
+        "Color": 0,
+        "Value": 9,
+        "Score": 9
+      },
+      {
+        "Color": 0,
+        "Value": 5,
+        "Score": 5
       }
     ],
     "TopCard": {

@@ -5,18 +5,25 @@ public class GameState
     public List<Card> AvailableCardsInDeck { get; set; }
     public List<Card> CardsInDiscard { get; set; }
     public bool SpecialCardEffectApplied { get; set; }
-    private Card? _currentTopCard;  // backing field
+    public Card? _currentTopCard;  // backing field
 
     public Card? CurrentTopCard
     {
         get 
         {
-            return _currentTopCard;
+            // Console.WriteLine("I am in current top card getter");
+            
+            // Check if there are any cards in the discard pile and return the last one (the top one).
+            if (CardsInDiscard != null && CardsInDiscard.Count > 0) 
+            {
+                return CardsInDiscard[CardsInDiscard.Count - 1]; // The last card in the list is the top of the discard pile.
+            }
+            return null; // No cards in the discard pile.
         }
         set 
         {
             _currentTopCard = value;
-            // Optionally, if the top card still needs to be a part of CardsInDiscard, add it to the list.
+            // Console.WriteLine("i am in current top card setter");
             if (CardsInDiscard != null && value != null) 
             {
                 if (!CardsInDiscard.Contains(value)) // or some other appropriate check
@@ -52,11 +59,11 @@ public class GameState
         // {
         //     Console.WriteLine(card.ToString()); // Assuming a suitable ToString method in 'Card' class
         // }
-        // Console.WriteLine("Cards In Discard:");
-        // foreach (var card in gameState.CardsInDiscard)
-        // {
-        //     Console.WriteLine(card.ToString()); // Same assumption as above
-        // }
+        Console.WriteLine("Cards In Discard:");
+        foreach (var card in gameState.CardsInDiscard)
+        {
+            Console.WriteLine(card.ToString()); // Same assumption as above
+        }
         Console.WriteLine("Players:");
         foreach (var player in gameState.Players)
         {

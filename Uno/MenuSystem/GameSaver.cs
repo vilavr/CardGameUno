@@ -162,7 +162,7 @@ public class GameSaver
             // Parse 'Players' from the 'Players' segment
 
             var playersJson = JsonConvert.SerializeObject(loadedData.Players);
-            var settingsJson = JsonConvert.SerializeObject(loadedData.Settings); // If you use settings somewhere else
+            // var settingsJson = JsonConvert.SerializeObject(loadedData.Settings);
 
             if (string.IsNullOrWhiteSpace(playersJson))
             {
@@ -172,7 +172,6 @@ public class GameSaver
 
             Console.WriteLine("Segments extracted. Preparing to construct game state...");
 
-            // Deserialize and convert the players' information.
             var deserializedPlayers = JsonConvert.DeserializeObject<Dictionary<string, dynamic>>(playersJson);
             if (deserializedPlayers == null)
             {
@@ -204,11 +203,10 @@ public class GameSaver
                     handCards.Add(card);
                 }
 
-                player.Hand = handCards; // Assuming Hand is a settable property
+                player.Hand = handCards; 
                 players.Add(player);
             }
 
-            // Now, you can create the new GameState from the 'Game' segment
             GameState gameState = new GameState
             {
                 AvailableCardsInDeck = loadedData.Game.AvailableCardsInDeck.ToObject<List<Card>>(),
@@ -217,17 +215,13 @@ public class GameSaver
                 SpecialCardEffectApplied = loadedData.Game.SpecialCardEffectApplied,
                 CurrentPlayerTurn = loadedData.Game.CurrentPlayerTurn,
                 CurrentRound = loadedData.Game.CurrentRound,
-                Players = players // Set the players from the deserialized 'Players' segment
+                Players = players 
             };
-
-            // If you need to apply settings from the 'Settings' segment to your game state or game settings,
-            // you would deserialize the settings and then apply them here. For example:
-            // var settings = JsonConvert.DeserializeObject<GameSettings>(File.ReadAllText(_settingsInfoPath));
-            // ApplySettingsToGameState(gameState, settings);
 
             Console.WriteLine($"Game state created successfully with {gameState.Players?.Count} player(s).");
             Console.WriteLine($"Game loaded from \"{Path.GetFileName(filePath)}\".");
 
+            gameState.PrintGameState(gameState);
             return gameState;
         }
         catch (Exception ex)
@@ -249,9 +243,7 @@ public class GameSaver
 
             for (int i = 0; i < quantity; i++)
             {
-                // Creation of a Card object depends on your implementation.
-                // You need to decide how you're mapping strings to actual Card objects.
-                var card = CreateCardFromName(cardName); // This is a method you should implement.
+                var card = CreateCardFromName(cardName);
                 cardList.Add(card);
             }
         }
@@ -260,7 +252,6 @@ public class GameSaver
     
     private Card CreateCardFromName(string cardName)
     {
-        // Assume cardName is something like "Blue Seven" or "Red Skip"
         string[] parts = cardName.Split(' ');
         if (parts.Length != 2)
         {
@@ -276,7 +267,6 @@ public class GameSaver
         CardValue cardValue;
         if (!Enum.TryParse(parts[1], true, out cardValue))
         {
-            // For values like "DrawTwo", "WildDrawFour", you might need to adjust the string before parsing
             string adjustedValue = Regex.Replace(parts[1], "(\\B[A-Z])", " $1");
             if (!Enum.TryParse(adjustedValue, true, out cardValue))
             {
@@ -284,7 +274,7 @@ public class GameSaver
             }
         }
 
-        return new Card(cardColor, cardValue); // Adjust if your Card constructor is different
+        return new Card(cardColor, cardValue);
     }
 
 }
