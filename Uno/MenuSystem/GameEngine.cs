@@ -114,8 +114,7 @@ public class GameEngine
     {
         if (_currentRound == 1)
         {
-            var playersInfo = _gameSetup.CreatePlayers();
-            _players = _gameSetup.ParsePlayerInfo(playersInfo);
+            _players = _gameSetup.CreatePlayers();
             _players = _gameSetup.SitPlayers(_players, _gameSettings);
             _gameSetup.PrintPlayersList(_players);
             gameState.Players = _players;
@@ -156,7 +155,6 @@ public class GameEngine
         _currentRound++;
     }
 
-    Console.WriteLine("Game state after initialization");
     // gameState.PrintGameState(gameState);
 }
 

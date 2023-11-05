@@ -123,7 +123,8 @@ public class CardSettingsCustomization
     public void UpdateCardQuantity(string settingsFileName)
     {
         // Absolute path to the Resources directory
-        var resourcesDirectory = "/home/viralavrova/cardgameuno/Uno/Resources";
+        string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
+        var resourcesDirectory = Path.Combine(Path.GetFullPath(Path.Combine(baseDirectory, "../../../../")), "Resources");
 
         // Complete file path
         var targetFilePath = Path.Combine(resourcesDirectory, settingsFileName);

@@ -3,10 +3,13 @@
     "Nickname": "1",
     "Type": "Human",
     "Hand": {
-      "Red Zero": 1,
-      "Blue Zero": 1,
-      "Green Reverse": 1,
-      "Green One": 1
+      "Green Seven": 1,
+      "Green Eight": 1,
+      "Green Two": 1,
+      "Blue Reverse": 1,
+      "Green Four": 1,
+      "Red DrawTwo": 1,
+      "Wild Wild": 1
     },
     "Score": 0
   },
@@ -14,15 +17,14 @@
     "Nickname": "2",
     "Type": "AI",
     "Hand": {
-      "Yellow Five": 1,
-      "Blue One": 1,
-      "Green Seven": 1,
-      "Yellow Skip": 2,
+      "Blue Seven": 1,
+      "Green Four": 1,
+      "Red Eight": 1,
+      "Green Eight": 1,
+      "Blue DrawTwo": 1,
       "Green Two": 1,
-      "Green Six": 1,
-      "Yellow Reverse": 1,
-      "Green Nine": 1
+      "Yellow Two": 1
     },
-    "Score": 109
+    "Score": 0
   }
 }

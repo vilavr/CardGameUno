@@ -104,9 +104,15 @@ public class Player
         }
     }
     
-    public void AddCardAndUpdateJson(Card card, string jsonFilePath = "/home/viralavrova/cardgameuno/Uno/Resources/players_info.json")
+    public void AddCardAndUpdateJson(Card card, string jsonFileName = "players_info.json")
     {
         if (card == null) throw new ArgumentNullException(nameof(card), "Cannot add a null card to a player's hand.");
+
+        // Calculate the relative path to the Resources directory from the base directory
+        string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
+        string relativePathToResources = Path.GetFullPath(Path.Combine(baseDirectory, "../../../../Resources"));
+
+        string jsonFilePath = Path.Combine(relativePathToResources, jsonFileName);
 
         // Add the card to the player's hand.
         Hand.Add(card);

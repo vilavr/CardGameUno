@@ -10,5 +10,10 @@
     <ItemGroup>
       <ProjectReference Include="..\MenuSystem\MenuSystem.csproj" />
     </ItemGroup>
+    <ItemGroup>
+        <None Include="../../Resources/*.*">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+    </ItemGroup>
 
 </Project>

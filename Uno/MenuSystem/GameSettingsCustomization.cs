@@ -46,7 +46,7 @@ public class GameSettingsCustomization<T>
     public void UpdateSetting(T value, GameSettingsCustomization<T> promptDetails)
     {
         // Absolute path to the Resources directory. This path might need to be updated according to your directory structure.
-        var resourcesDirectory = "/home/viralavrova/cardgameuno/Uno/Resources";
+        var resourcesDirectory = Path.Combine(Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../../../../")), "Resources");
         var settingsFileName =
             ApplicationState.SettingsFileName!; // Your current settings file name, retrieved from a global state.
 

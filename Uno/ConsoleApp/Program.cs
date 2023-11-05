@@ -1,5 +1,9 @@
 ﻿using MenuSystem;
 Menu mainMenu = null!;
+string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
+string relativePathToProjectRoot = Path.Combine(Path.GetFullPath(Path.Combine(baseDirectory, "../../../../")), "Resources");
+
+
 var numberOfDecksPrompt = new GameSettingsCustomization<int>(
     "Enter the number of decks (1-4): ",
     Enumerable.Range(1, 4).ToList(), // Allowing 1 to 4 decks for variety.
@@ -42,7 +46,7 @@ string PromptForSettingsFile()
         filename += ".json";
     }
 
-    var fullPath = Path.Combine("/home/viralavrova/cardgameuno/Uno/Resources", filename);
+    var fullPath = Path.Combine(relativePathToProjectRoot, filename);
     ApplicationState.SettingsFileName = fullPath;
 
     return fullPath;
@@ -183,10 +187,10 @@ var settingsChoice = new Menu("Choose what settings you want to continue with", 
         MethodToRun = () =>
         {
             // Managing settings files.
-            var settingsManager = new SettingsFileManager("/home/viralavrova/cardgameuno/Uno/Resources");
+            var settingsManager = new SettingsFileManager(relativePathToProjectRoot);
             settingsManager.PromptAndCopySettings(true);
 
-            string settingsFilePath = "/home/viralavrova/cardgameuno/Uno/Resources/settings_info.json";
+            string settingsFilePath = Path.Combine(relativePathToProjectRoot, "settings_info.json");
             var gameEngine = new GameEngine(settingsFilePath);
 
             // Start the game
@@ -207,20 +211,19 @@ var settingsChoice = new Menu("Choose what settings you want to continue with", 
             var saveForFuture = Console.ReadLine()?.Trim().ToLower() ?? "no";
 
             string customSettingsFilePath;
-            var settingsManager = new SettingsFileManager("/home/viralavrova/cardgameuno/Uno/Resources");
-            var targetSettingsFilePath =
-                Path.Combine("/home/viralavrova/cardgameuno/Uno/Resources", "settings_info.json");
+            var settingsManager = new SettingsFileManager(relativePathToProjectRoot);
+            var targetSettingsFilePath =Path.Combine(relativePathToProjectRoot, "settings_info.json");
 
             if (saveForFuture == "yes")
             {
                 Console.Write("Enter the name for the settings file (without extension): ");
                 var customSettingsFile = Console.ReadLine()?.Trim() ?? "custom_settings";
-                customSettingsFilePath = Path.Combine("/home/viralavrova/cardgameuno/Uno/Resources",
+                customSettingsFilePath = Path.Combine(relativePathToProjectRoot,
                     customSettingsFile + ".json");
 
                 if (!File.Exists(customSettingsFilePath))
                     settingsManager.CopyContentsToSettingsInfo(
-                        Path.Combine("/home/viralavrova/cardgameuno/Uno/Resources", "default_settings.json"),
+                        Path.Combine(relativePathToProjectRoot, "default_settings.json"),
                         customSettingsFilePath);
 
                 // Set the custom settings file as the one to use for this session.
@@ -231,7 +234,7 @@ var settingsChoice = new Menu("Choose what settings you want to continue with", 
             }
             else
             {
-                var defaultSettingsFilePath = "/home/viralavrova/cardgameuno/Uno/Resources/default_settings.json";
+                var defaultSettingsFilePath = Path.Combine(relativePathToProjectRoot, "default_settings.json");
                 settingsManager.CopyContentsToSettingsInfo(defaultSettingsFilePath, targetSettingsFilePath);
 
                 // Set 'settings_info.json' as the file to use for this session.
@@ -239,7 +242,7 @@ var settingsChoice = new Menu("Choose what settings you want to continue with", 
                 kindofSettingsToCustomizeStartGame.Run();
             }
 
-            string settingsFilePath = "/home/viralavrova/cardgameuno/Uno/Resources/settings_info.json";
+            string settingsFilePath = Path.Combine(relativePathToProjectRoot, "settings_info.json");
             var gameEngine = new GameEngine(settingsFilePath);
 
             // Start the game
@@ -255,10 +258,10 @@ var settingsChoice = new Menu("Choose what settings you want to continue with", 
         MenuLabel = "Use pre-saved settings",
         MethodToRun = () =>
         {
-            var settingsManager = new SettingsFileManager("/home/viralavrova/cardgameuno/Uno/Resources");
+            var settingsManager = new SettingsFileManager(relativePathToProjectRoot);
             settingsManager.PromptAndCopySettings(false);
 
-            string settingsFilePath = "/home/viralavrova/cardgameuno/Uno/Resources/settings_info.json";
+            string settingsFilePath = Path.Combine(relativePathToProjectRoot, "settings_info.json");
             var gameEngine = new GameEngine(settingsFilePath);
 
             // Start the game
@@ -294,7 +297,6 @@ mainMenu = new Menu("Main menu", new List<MenuItem>
         MenuLabel = "Load game",
         MethodToRun = () =>
         {
-            // Creating the instance responsible for save/load operations.
             var gameSaver = new GameSaver();
 
             // Prompting the user to select a save file and obtaining the file path.
@@ -304,7 +306,7 @@ mainMenu = new Menu("Main menu", new List<MenuItem>
 
                 if (gameState != null)
                 {
-                    string settingsFilePath = "/home/viralavrova/cardgameuno/Uno/Resources/settings_info.json";
+                    string settingsFilePath = Path.Combine(relativePathToProjectRoot, "settings_info.json");
                     var gameEngine = new GameEngine(settingsFilePath);
 
                     // Start the game
@@ -313,15 +315,13 @@ mainMenu = new Menu("Main menu", new List<MenuItem>
                 else
                 {
                     Console.WriteLine("Error loading game. Please start a new game or try loading again.");
-                    // You could return to the main menu or handle this situation differently depending on your design.
                 }
             }
             else
             {
                 Console.WriteLine("Load game cancelled or no save files available. Returning to main menu.");
-                // Handling the situation where no file is selected or no saves are available.
             }
-            return null; // Return 'null' to signify the end of this menu action, assuming it aligns with your method's expectations.
+            return null;
         }
     }
 });

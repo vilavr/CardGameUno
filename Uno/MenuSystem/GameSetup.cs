@@ -8,7 +8,7 @@ public class GameSetup
 {
     private int _nextPlayerId = 1; // Used for auto-incrementing player IDs
 
-    public string CreatePlayers()
+    public List<Player> CreatePlayers()
     {
         Console.WriteLine("Enter the number of players (between 2 and 10):");
         int playerCount;
@@ -18,7 +18,7 @@ public class GameSetup
             Console.WriteLine("Invalid number, please enter a number between 2 and 10.");
         }
 
-        var playerInfos = "";
+        var players = new List<Player>();
         var validNicknameRegex = new Regex("^[a-zA-Z0-9_-]+$");
         var existingNicknames = new HashSet<string>();
 
@@ -48,20 +48,17 @@ public class GameSetup
             var playerType = ChoosePlayerType();
 
             var player = new Player(_nextPlayerId++, nickname, playerType);
-
-            playerInfos += $"{player.Id} : {player.Nickname} : {player.Type}";
-
-            if (i < playerCount - 1)
-                playerInfos += " ; ";
+            players.Add(player);
 
             Console.WriteLine($"{nickname} has been added as a {playerType} player.");
         }
 
         Console.WriteLine("All players have been created successfully.");
-        var players = ParsePlayerInfo(playerInfos);
+
         ReviewAndEditPlayers(players);
-        return playerInfos;
+        return players;
     }
+
 
 
     private EPlayerType ChoosePlayerType()
@@ -86,30 +83,6 @@ public class GameSetup
                     break;
             }
         }
-    }
-
-    public List<Player> ParsePlayerInfo(string playerInfo)
-    {
-        var players = new List<Player>();
-
-        // Split the input string into individual player info strings.
-        var playerInfos = playerInfo.Split(new[] { " ; " }, StringSplitOptions.None);
-
-        foreach (var info in playerInfos)
-        {
-            // Split each player's info into its components.
-            var parts = info.Split(new[] { " : " }, StringSplitOptions.None);
-            if (parts.Length == 3)
-            {
-                var id = int.Parse(parts[0]);
-                var nickname = parts[1];
-                var type = (EPlayerType)Enum.Parse(typeof(EPlayerType), parts[2]);
-
-                players.Add(new Player(id, nickname, type));
-            }
-        }
-
-        return players;
     }
     public void PrintPlayersList(List<Player> players)
     {
@@ -153,6 +126,8 @@ public class GameSetup
                     playerToEdit.Type = newPlayerType;
 
                     Console.WriteLine($"{playerToEdit.Nickname} has been updated to be a {playerToEdit.Type} player.");
+                    
+                    SavePlayersToJson(players);
                 }
             }
             else
@@ -227,10 +202,9 @@ public class GameSetup
         {
             // Prepare the hand for serialization as before
             var preparedHand = PreparePlayerHandForSerialization(player.Hand);
-
             // Create a new PlayerInfo record with the required information
-            var info = new PlayerInfo(player.Nickname, player.Type.ToString(), preparedHand, player.Score); // Convert the enum to a string here
-
+            var info = new PlayerInfo(player.Nickname, player.Type.ToString(), preparedHand, player.Score); 
+            
             // Add this to our dictionary
             playerData[player.Id.ToString()] = info;
         }
@@ -244,7 +218,7 @@ public class GameSetup
 
         var json = JsonSerializer.Serialize(playerData, options);
 
-        var directoryPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "/home/viralavrova/cardgameuno/Uno/Resources");
+        var directoryPath = Path.Combine(Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../../../../")), "Resources");
         Directory.CreateDirectory(directoryPath); // If it already exists, this method does nothing
         var filePath = Path.Combine(directoryPath, "players_info.json");
         File.WriteAllText(filePath, json);
@@ -254,7 +228,7 @@ public class GameSetup
     public List<Player> SitPlayers(List<Player> players, GameSettings settings)
     {
         // Load the JSON configuration from the file
-        var jsonFilePath = "/home/viralavrova/cardgameuno/Uno/Resources/settings_info.json";
+        var jsonFilePath = Path.Combine(Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../../../../")), "Resources/settings_info.json");
         var jsonString = File.ReadAllText(jsonFilePath);
 
         GameSettings gameSettings;

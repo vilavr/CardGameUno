@@ -25,7 +25,6 @@ public class CardDeck
         }
 
         foreach (var card in Cards)
-            // Assuming the Card class has a method ToString() implemented that describes the card
             Console.WriteLine("   " + card);
     }
 

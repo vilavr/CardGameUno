@@ -6,17 +6,17 @@ namespace MenuSystem;
 public class GameSaver
 {
     private readonly string
-        _playersInfoPath = "/home/viralavrova/cardgameuno/Uno/Resources/players_info.json"; // Path to players info
+        _playersInfoPath = Path.Combine(Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../../../../")), "Resources/players_info.json");// Path to players info
 
     private readonly string
-        _settingsInfoPath = "/home/viralavrova/cardgameuno/Uno/Resources/settings_info.json"; // Path to game settings
+        _settingsInfoPath = Path.Combine(Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../../../../")), "Resources/settings_info.json"); // Path to game settings
 
     public void SaveGame(GameState gameState)
     {
         Console.WriteLine("Please enter a file name to save the current game state (default: gamestate_info.json):");
         var inputFileName = Console.ReadLine()!.Trim();
 
-        var targetDirectory = "/home/viralavrova/cardgameuno/Uno/Resources/";
+        var targetDirectory = Path.Combine(Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../../../../")), "Resources");
 
         if (!Directory.Exists(targetDirectory))
             Directory.CreateDirectory(targetDirectory);
@@ -56,7 +56,7 @@ public class GameSaver
     }
 
 
-    private readonly string _directoryPath = "/home/viralavrova/cardgameuno/Uno/Resources";
+    private readonly string _directoryPath = Path.Combine(Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../../../../")), "Resources");
 
     public bool PromptUserForLoad(out string selectedFilePath)
     {

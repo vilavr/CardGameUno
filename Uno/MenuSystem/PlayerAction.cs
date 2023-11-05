@@ -5,7 +5,7 @@ public class PlayerAction
     private readonly GameState _gameState;
     private readonly Player _player;
 
-    private readonly string jsonplayersfilepath = "/home/viralavrova/cardgameuno/Uno/Resources/players_info.json";
+    private readonly string jsonplayersfilepath = Path.Combine(Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../../../../")), "Resources/players_info.json");
 
     public PlayerAction(Player player, GameState gameState)
     {
