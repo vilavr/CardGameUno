@@ -38,9 +38,9 @@
         "net7.0": {
           "targetAlias": "net7.0",
           "dependencies": {
-            "Newtonsoft.Json": {
+            "Pomelo.EntityFrameworkCore.MySql": {
               "target": "Package",
-              "version": "[13.0.3, )"
+              "version": "[7.0.0, )"
             }
           },
           "imports": [

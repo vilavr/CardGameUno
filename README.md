@@ -30,7 +30,7 @@ Bugs I know exist and will fix, please if you notice any more bugs add them here
 
 ## Repository problems I don't know how to fix :(
 
-1. **Gitignore**: in my local branch I have the full gitignore. However, it doesn't get pushed to git even when I change it. That's why the repo is flooded with unnecessary files
-2. **Making separate class libraries**: when I tried to create new class libraries, the referencing didn't work (I tried both adding them through terminal, editing .csproj files and context actions). Now all my 15+ classes are in one library and I don't really know how to refactor that
-3. **Json files paths**: I use them a lot and all of them are in Resources directory on solution level. However, if I reference them with solution level paths (/Uno/Resources/file.json) I get exception "file not found", because C# tries to search for this directory in /Bin/Debug directory. That's why I have all paths as absolute ones and the project won't work on any computer except mine :') I would love to get help with fixing this
+1. **Gitignore**: in my local branch I have the full gitignore. However, it doesn't get pushed to git even when I change it. That's why the repo is flooded with unnecessary files (upd: fixed)
+2. **Making separate class libraries**: when I tried to create new class libraries, the referencing didn't work (I tried both adding them through terminal, editing .csproj files and context actions). Now all my 15+ classes are in one library and I don't really know how to refactor that (upd: cannot be fixed straightaway because of cross-referencing)
+3. **Json files paths**: I use them a lot and all of them are in Resources directory on solution level. However, if I reference them with solution level paths (/Uno/Resources/file.json) I get exception "file not found", because C# tries to search for this directory in /Bin/Debug directory. That's why I have all paths as absolute ones and the project won't work on any computer except mine :') I would love to get help with fixing this (upd: fixed)
 

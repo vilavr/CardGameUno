@@ -1,4 +1,7 @@
-﻿using MenuSystem;
+﻿using Domain;
+using GameSystem;
+using MenuSystem;
+
 Menu mainMenu = null!;
 string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
 string relativePathToProjectRoot = Path.Combine(Path.GetFullPath(Path.Combine(baseDirectory, "../../../../")), "Resources");
@@ -302,7 +305,7 @@ mainMenu = new Menu("Main menu", new List<MenuItem>
             // Prompting the user to select a save file and obtaining the file path.
             if (gameSaver.PromptUserForLoad(out string filePath))
             {
-                GameState? gameState = gameSaver.LoadGame(filePath);
+                var gameState = gameSaver.LoadGame(filePath);
 
                 if (gameState != null)
                 {

@@ -1,4 +1,6 @@
-namespace MenuSystem;
+using Domain;
+
+namespace GameSystem;
 
 public class GameEngine
 {

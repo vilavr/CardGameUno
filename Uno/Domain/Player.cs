@@ -1,7 +1,7 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace MenuSystem;
+namespace Domain;
 
 public class Player
 {

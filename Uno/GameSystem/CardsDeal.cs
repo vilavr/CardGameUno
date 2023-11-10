@@ -1,7 +1,8 @@
 using System.Text.Json;
 using System.Linq;
+using Domain;
 
-namespace MenuSystem;
+namespace GameSystem;
 
 public class CardsDeal
 {

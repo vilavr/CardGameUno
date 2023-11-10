@@ -1,15 +1,14 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <OutputType>Exe</OutputType>
         <TargetFramework>net7.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\GameSystem\GameSystem.csproj" />
-      <ProjectReference Include="..\MenuSystem\MenuSystem.csproj" />
+      <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+      <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="7.0.0" />
     </ItemGroup>
     <ItemGroup>
         <None Include="../../Resources/*.*">
@@ -17,7 +16,7 @@
         </None>
     </ItemGroup>
     <ItemGroup>
-      <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="7.0.0" />
+      <ProjectReference Include="..\Domain\Domain.csproj" />
     </ItemGroup>
 
 </Project>

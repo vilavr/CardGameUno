@@ -1,6 +1,6 @@
 using Newtonsoft.Json.Linq;
 
-namespace MenuSystem;
+namespace GameSystem;
 
 public class GameSettingsCustomization<T>
 {

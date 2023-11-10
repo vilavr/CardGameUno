@@ -2,7 +2,7 @@ using System.Globalization;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json.Linq;
 
-namespace MenuSystem;
+namespace GameSystem;
 
 public class CardSettingsCustomization
 {

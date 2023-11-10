@@ -1,6 +1,6 @@
 using System.Text.Json;
 
-namespace MenuSystem;
+namespace GameSystem;
 
 public class GameSettings
 {

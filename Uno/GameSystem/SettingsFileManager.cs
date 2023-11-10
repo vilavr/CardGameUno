@@ -1,4 +1,4 @@
-namespace MenuSystem;
+namespace GameSystem;
 
 public class SettingsFileManager
 {

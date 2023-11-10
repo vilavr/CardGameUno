@@ -1,4 +1,4 @@
-namespace MenuSystem;
+namespace Domain;
 
 public class GameState
 {

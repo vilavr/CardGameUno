@@ -1,7 +1,8 @@
 using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
+using Domain;
 
-namespace MenuSystem;
+namespace GameSystem;
 
 public class CardDeck
 {
