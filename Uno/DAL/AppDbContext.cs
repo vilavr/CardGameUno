@@ -23,7 +23,7 @@ public class AppDbContext : DbContext
 
         // Unique constraint for GameSetting.FileName
         modelBuilder.Entity<GameSetting>()
-            .HasIndex(gs => gs.FileName)
+            .HasIndex(gs => new { gs.FileName, gs.SettingName })
             .IsUnique();
 
         // Unique constraint for Player.PlayerNickname

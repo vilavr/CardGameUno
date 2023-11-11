@@ -24,7 +24,8 @@ public class GameSetting
     public required string SettingValue { get; set; } 
 
     // Foreign key for Game
-    public int GameId { get; set; }
+    [DefaultValue(null)]
+    public int? GameId { get; set; }
 
     // Navigation property; it can be null as user can just precreate settings for the game
     public Game? Game { get; set; }

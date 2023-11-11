@@ -11,6 +11,7 @@
       <ProjectReference Include="..\GameSystem\GameSystem.csproj" />
       <ProjectReference Include="..\MenuSystem\MenuSystem.csproj" />
         <ProjectReference Include="..\DAL\DAL.csproj" />
+        <ProjectReference Include="..\DBoperations\DBoperations.csproj" />
     </ItemGroup>
     <ItemGroup>
         <None Include="../../Resources/*.*">

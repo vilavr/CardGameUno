@@ -1,73 +1,63 @@
+using System;
 using System.Globalization;
+using System.Linq;
 using System.Text.RegularExpressions;
-using Newtonsoft.Json.Linq;
+using DAL;
+using Domain.Database;  // Replace with your actual namespace for domain entities
+using Microsoft.EntityFrameworkCore;
 
 namespace GameSystem;
 
 public class CardSettingsCustomization
 {
-    private string _filePath;
-    private JObject _settings;
+    private readonly AppDbContext _context;
+    private readonly string _defaultFileName = "Default"; 
 
-    public CardSettingsCustomization(string filePath)
+    public CardSettingsCustomization(AppDbContext context)
     {
-        _filePath = filePath;
-        var jsonData = File.ReadAllText(filePath);
-        _settings = JObject.Parse(jsonData);
+        _context = context;
     }
-
-    private (string cardName, int newQuantity, int currentQuantity)? ValidateAndNormalizeInput(string input)
+    private (string cardName, int newQuantity, int currentQuantity)? ValidateAndNormalizeInput(string input, string fileName)
     {
         input = input.Trim();
-        // Console.WriteLine($"Debug: Input command: '{input}'");
-
+    
         var match = Regex.Match(input, @"(?<card>[a-zA-Z]+(?:\s+[a-zA-Z]+)*\s*\d*)\s+(?<operation>[+-]\d+)");
         if (!match.Success)
-            // Console.WriteLine("Debug: Regex match was not successful.");
+        {
             return null;
-        
+        }
+    
         // Normalize card name
         var cardName = GetNormalizedCardName(match.Groups["card"].Value.Trim());
-        // Console.WriteLine($"Debug: Normalized card name: '{cardName}'");
 
         if (string.IsNullOrEmpty(cardName))
-            // Console.WriteLine("Debug: Card name after normalization is empty.");
+        {
             return null;
+        }
 
         // Validate and calculate the new card quantity
-        int change;
-        try
+        if (!int.TryParse(match.Groups["operation"].Value, out int change))
         {
-            change = int.Parse(match.Groups["operation"].Value);
-            // Console.WriteLine($"Debug: Change value: {change}");
+            return null;
         }
-        catch (FormatException)
+    
+        // Retrieve the setting from the database
+        var setting = _context.GameSettings
+            .Where(gs => gs.FileName == fileName && gs.SettingName == cardName)
+            .Select(gs => new { gs.SettingValue })
+            .SingleOrDefault();
+
+        if (setting == null)
         {
-            // Console.WriteLine("Debug: Operation value is not a valid integer.");
             return null;
         }
 
-        var jsonKey = "cardSettings." + cardName;
-        var cardSetting = _settings.SelectToken(jsonKey);
-
-        if (cardSetting == null)
-            // Console.WriteLine($"Debug: No settings found for card '{cardName}'.");
-            return null;
-
-        int currentQuantity;
-        try
+        if (!int.TryParse(setting.SettingValue, out int currentQuantity))
         {
-            currentQuantity = cardSetting.Value<int>();
-            // Console.WriteLine($"Debug: Current quantity: {currentQuantity}");
-        }
-        catch (Exception)
-        {
-            // Console.WriteLine("Debug: Current quantity is not an integer.");
             return null;
         }
 
         var newQuantity = currentQuantity + change;
-        // Console.WriteLine($"Debug: New quantity: {newQuantity}");
 
         // Check if new quantity falls within the acceptable range
         if (newQuantity < 0 || newQuantity > 4)
@@ -122,35 +112,31 @@ public class CardSettingsCustomization
 
     public void UpdateCardQuantity(string settingsFileName)
     {
-        // Absolute path to the Resources directory
-        string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
-        var resourcesDirectory = Path.Combine(Path.GetFullPath(Path.Combine(baseDirectory, "../../../../")), "Resources");
+        var targetFileName = string.IsNullOrEmpty(settingsFileName) ? _defaultFileName : settingsFileName;
 
-        // Complete file path
-        var targetFilePath = Path.Combine(resourcesDirectory, settingsFileName);
+        // Check if settings for the given FileName already exist
+        var settingsExist = _context.GameSettings.Any(gs => gs.FileName == targetFileName);
 
-        // If the target file doesn't exist, create it and copy the contents from the default file
-        if (!File.Exists(targetFilePath))
+        if (!settingsExist)
         {
-            // Use the default settings file as a template
-            var defaultFilePath = Path.Combine(resourcesDirectory, "default_settings.json");
-            if (File.Exists(defaultFilePath))
-            {
-                File.Copy(defaultFilePath, targetFilePath);
-                Console.WriteLine(
-                    $"A new settings file has been created based on the default settings: {settingsFileName}");
-            }
-            else
-            {
-                Console.WriteLine($"Error: Default settings file not found: {defaultFilePath}");
-                return;
-            }
-        }
+            // If settings do not exist, create a copy of all default entries with the new FileName
+            var defaultSettings = _context.GameSettings
+                .Where(gs => gs.FileName == _defaultFileName)
+                .ToList();
 
-        // Load the settings from the target file
-        _filePath = targetFilePath;
-        var jsonData = File.ReadAllText(_filePath);
-        _settings = JObject.Parse(jsonData);
+            foreach (var setting in defaultSettings)
+            {
+                _context.GameSettings.Add(new GameSetting
+                {
+                    FileName = targetFileName,
+                    SettingName = setting.SettingName,
+                    SettingValue = setting.SettingValue
+                });
+            }
+
+            _context.SaveChanges();
+            Console.WriteLine($"A new settings file has been created based on the default settings: {settingsFileName}");
+        }
 
         // Loop for multiple updates
         while (true)
@@ -158,31 +144,33 @@ public class CardSettingsCustomization
             Console.WriteLine("\nEnter the card update command (e.g., 'Red 0 +2') or press 'f' to finish:");
             var input = Console.ReadLine();
 
-            if (input?.Trim().ToLower() == "f") break; // Exit the loop if the user wants to finish
+            if (string.Equals(input?.Trim(), "f", StringComparison.OrdinalIgnoreCase)) break; // Exit the loop if the user wants to finish
 
-            var validationResult = ValidateAndNormalizeInput(input);
+            // Inside your loop in the UpdateCardQuantity method
+            var validationResult = ValidateAndNormalizeInput(input, targetFileName);
             if (validationResult == null)
             {
                 Console.WriteLine("Invalid command or card name, or the quantity was out of range. Please try again.");
                 continue;
             }
 
-            var (cardName, newQuantity, currentQuantity) = validationResult.Value;
 
-            // Inside your loop where you update each card, replace the updating section with this:
+            var (cardName, newQuantity, _) = validationResult.Value;
 
-            if (newQuantity == currentQuantity)
+            // Retrieve the setting from the database
+            var settingToUpdate = _context.GameSettings
+                .SingleOrDefault(gs => gs.FileName == targetFileName && gs.SettingName == cardName);
+
+            if (settingToUpdate != null)
             {
-                Console.WriteLine(
-                    $"Quantity of '{cardName.Replace("_", " ")}' cards is already {currentQuantity}. No changes were made.");
+                // Update the existing setting
+                settingToUpdate.SettingValue = newQuantity.ToString();
+                _context.SaveChanges();
+                Console.WriteLine($"Updated quantity of '{cardName.Replace("_", " ")}' cards to: {newQuantity} in file: {targetFileName}");
             }
             else
             {
-                var cardSettings = (JObject)_settings["cardSettings"]!; // Access the 'cardSettings' object.
-                cardSettings[cardName] = newQuantity;
-                File.WriteAllText(_filePath, _settings.ToString());
-                Console.WriteLine($"Updated quantity of '{cardName.Replace("_", " ")}' cards to: {newQuantity} in file: {_filePath}");
-
+                Console.WriteLine($"Error: Setting '{cardName}' not found for file '{targetFileName}'.");
             }
         }
     }
