@@ -18,4 +18,9 @@ public class Card
 
     [Required]
     public int CardScore { get; set; }
+    
+    public List<PlayerCard>? PlayerCards { get; set; }
+    
+    // Navigation property for the many-to-many relationship with Game via GameCard
+    public required List<GameCard> GameCards { get; set; }
 }

@@ -15,5 +15,7 @@ public class Player
     [MaxLength(100)] 
     public required string PlayerNickname { get; set; }
 
-    public List<Card>? PlayerCards { get; set; }
+    public List<PlayerCard>? PlayerCards { get; set; }
+    
+    public int Score { get; set; }
 }

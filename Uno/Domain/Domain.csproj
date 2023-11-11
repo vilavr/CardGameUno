@@ -10,4 +10,10 @@
       <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Reference Include="Microsoft.EntityFrameworkCore.Abstractions">
+        <HintPath>..\..\..\.nuget\packages\microsoft.entityframeworkcore.abstractions\7.0.2\lib\net6.0\Microsoft.EntityFrameworkCore.Abstractions.dll</HintPath>
+      </Reference>
+    </ItemGroup>
+
 </Project>

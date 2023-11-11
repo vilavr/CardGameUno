@@ -10,6 +10,7 @@
     <ItemGroup>
       <ProjectReference Include="..\GameSystem\GameSystem.csproj" />
       <ProjectReference Include="..\MenuSystem\MenuSystem.csproj" />
+        <ProjectReference Include="..\DAL\DAL.csproj" />
     </ItemGroup>
     <ItemGroup>
         <None Include="../../Resources/*.*">
@@ -17,7 +18,12 @@
         </None>
     </ItemGroup>
     <ItemGroup>
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.13">
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        <PrivateAssets>all</PrivateAssets>
+      </PackageReference>
       <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="7.0.0" />
+      <PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" Version="2.1.6" />
     </ItemGroup>
 
 </Project>

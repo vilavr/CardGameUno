@@ -1,6 +1,8 @@
-﻿using Domain;
-using GameSystem;
+﻿using GameSystem;
 using MenuSystem;
+using DAL;
+
+SQLitePCL.Batteries.Init();
 
 Menu mainMenu = null!;
 string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
