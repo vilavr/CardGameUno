@@ -63,7 +63,7 @@ public class GameSettingsService
     public void ApplyPreSavedSettings(string settingsFileName, int gameId)
     {
          var existingSettingsForGame = _context.GameSettings
-        .Any(gs => gs.FileName == settingsFileName && gs.GameId == gameId);
+        .Any(gs => gs.FileName == settingsFileName);
          if (!existingSettingsForGame)
          {
              var preSavedSettings = _context.GameSettings.Where(gs => gs.FileName == settingsFileName).ToList();
@@ -100,23 +100,45 @@ public class GameSettingsService
     
     public IEnumerable<string> GetDistinctFileNames()
     {
-        return _context.GameSettings.Select(gs => gs.FileName).Distinct().ToList();
+        return _context.GameSettings
+            .Where(gs => gs.FileName != "settings_info")
+            .Select(gs => gs.FileName)
+            .Distinct()
+            .ToList();
     }
     
     public string? PromptForPreSavedSettings()
     {
-        var distinctFileNames = GetDistinctFileNames();
-
-        Console.WriteLine("Available settings files:");
-        foreach (var fName in distinctFileNames)
+        var distinctFileNames = GetDistinctFileNames().ToList();
+        if (!distinctFileNames.Any())
         {
-            Console.WriteLine(fName);
+            Console.WriteLine("No pre-saved settings files available.");
+            return null;
         }
 
-        Console.Write("Enter the name of the settings file you want to use: ");
-        var input = Console.ReadLine()?.Trim();
+        Console.WriteLine("Available settings files:");
+        for (int i = 0; i < distinctFileNames.Count; i++)
+        {
+            Console.WriteLine($"{i + 1}) {distinctFileNames[i]}");
+        }
 
-        return input;
+        while (true) // Keep prompting the user until valid input is received
+        {
+            Console.Write("Enter the number of the settings file you want to use: ");
+            var input = Console.ReadLine()?.Trim();
+
+            if (int.TryParse(input, out int selectedNumber) &&
+                selectedNumber >= 1 && 
+                selectedNumber <= distinctFileNames.Count)
+            {
+                return distinctFileNames[selectedNumber - 1];
+            }
+            else
+            {
+                Console.WriteLine($"Invalid input. Please enter a number between 1 and {distinctFileNames.Count}.");
+            }
+        }
     }
+
 
 }
