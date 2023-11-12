@@ -111,15 +111,18 @@ public class CardSettingsCustomization
     }
 
     public void UpdateCardQuantity(string settingsFileName)
+{
+    using var transaction = _context.Database.BeginTransaction();
+    try
     {
         var targetFileName = string.IsNullOrEmpty(settingsFileName) ? _defaultFileName : settingsFileName;
+        // Console.WriteLine($"Checking existence of card settings for file: {targetFileName}");
 
-        // Check if settings for the given FileName already exist
         var settingsExist = _context.GameSettings.Any(gs => gs.FileName == targetFileName);
 
         if (!settingsExist)
         {
-            // If settings do not exist, create a copy of all default entries with the new FileName
+            // Console.WriteLine($"No card settings found for {targetFileName}, creating with default settings...");
             var defaultSettings = _context.GameSettings
                 .Where(gs => gs.FileName == _defaultFileName)
                 .ToList();
@@ -134,19 +137,21 @@ public class CardSettingsCustomization
                 });
             }
 
-            _context.SaveChanges();
-            Console.WriteLine($"A new settings file has been created based on the default settings: {settingsFileName}");
+            int createdCount = _context.SaveChanges();
+            // Console.WriteLine($"{createdCount} card settings created for {targetFileName}.");
         }
 
-        // Loop for multiple updates
         while (true)
         {
             Console.WriteLine("\nEnter the card update command (e.g., 'Red 0 +2') or press 'f' to finish:");
             var input = Console.ReadLine();
 
-            if (string.Equals(input?.Trim(), "f", StringComparison.OrdinalIgnoreCase)) break; // Exit the loop if the user wants to finish
+            if (string.Equals(input?.Trim(), "f", StringComparison.OrdinalIgnoreCase))
+            {
+                // Console.WriteLine("Finishing card quantity update.");
+                break; // Exit the loop if the user wants to finish
+            }
 
-            // Inside your loop in the UpdateCardQuantity method
             var validationResult = ValidateAndNormalizeInput(input, targetFileName);
             if (validationResult == null)
             {
@@ -154,24 +159,29 @@ public class CardSettingsCustomization
                 continue;
             }
 
-
             var (cardName, newQuantity, _) = validationResult.Value;
-
-            // Retrieve the setting from the database
             var settingToUpdate = _context.GameSettings
-                .SingleOrDefault(gs => gs.FileName == targetFileName && gs.SettingName == cardName);
+                .FirstOrDefault(gs => gs.FileName == targetFileName && gs.SettingName == cardName);
 
             if (settingToUpdate != null)
             {
-                // Update the existing setting
                 settingToUpdate.SettingValue = newQuantity.ToString();
-                _context.SaveChanges();
-                Console.WriteLine($"Updated quantity of '{cardName.Replace("_", " ")}' cards to: {newQuantity} in file: {targetFileName}");
+                int changesSaved = _context.SaveChanges();
+                Console.WriteLine($"Updated quantity of '{cardName.Replace("_", " ")}' cards to: {newQuantity} in file: {targetFileName}.");
             }
             else
             {
-                Console.WriteLine($"Error: Setting '{cardName}' not found for file '{targetFileName}'.");
+                Console.WriteLine($"Error: Card setting '{cardName}' not found for file '{targetFileName}'.");
             }
         }
+
+        transaction.Commit();
     }
+    catch (Exception ex)
+    {
+        transaction.Rollback();
+        Console.WriteLine($"An error occurred during card settings update: {ex.Message}");
+    }
+}
+
 }

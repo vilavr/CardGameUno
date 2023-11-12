@@ -107,7 +107,7 @@ using (var context = new AppDbContext(contextOptions))
                 MethodToRun = () =>
                 {
                     int numberOfDecks = numberOfDecksPrompt.GetUserInput();
-                    numberOfDecksPrompt.UpdateSetting(numberOfDecks, ApplicationState.SettingsFileName, context);
+                    numberOfDecksPrompt.UpdateSetting(numberOfDecks, ApplicationState.SettingsFileName, null, context);
                     return "return";
                 }
             },
@@ -118,7 +118,7 @@ using (var context = new AppDbContext(contextOptions))
                 MethodToRun = () =>
                 {
                     int winningScore = winningScorePrompt.GetUserInput();
-                    winningScorePrompt.UpdateSetting(winningScore, ApplicationState.SettingsFileName, context);
+                    winningScorePrompt.UpdateSetting(winningScore, ApplicationState.SettingsFileName, null, context);
 
                     return "return";
                 }
@@ -130,7 +130,7 @@ using (var context = new AppDbContext(contextOptions))
                 MethodToRun = () =>
                 {
                     string playDirection = directionPrompt.GetUserInput();
-                    directionPrompt.UpdateSetting(playDirection, ApplicationState.SettingsFileName, context);
+                    directionPrompt.UpdateSetting(playDirection, ApplicationState.SettingsFileName, null, context);
 
                     return "return";
                 }
@@ -142,7 +142,7 @@ using (var context = new AppDbContext(contextOptions))
                 MethodToRun = () =>
                 {
                     int numberOfCards = numberOfCardsPrompt.GetUserInput();
-                    numberOfCardsPrompt.UpdateSetting(numberOfCards, ApplicationState.SettingsFileName, context);
+                    numberOfCardsPrompt.UpdateSetting(numberOfCards, ApplicationState.SettingsFileName, null, context);
 
                     return "return";
                 }
@@ -199,10 +199,15 @@ using (var context = new AppDbContext(contextOptions))
             MenuLabel = "Default settings",
             MethodToRun = () =>
             {
-                // Managing settings files.
-                var settingsManager = new SettingsFileManager(relativePathToProjectRoot);
-                settingsManager.PromptAndCopySettings(true);
-
+                // Using the GameSettingsService to handle the settings
+                var settingsService = new GameSettingsService(context);
+                int gameId = settingsService.CreateNewGame("Default");
+                settingsService.EnsureSettingsForGame(gameId, "Default");
+        
+                // var gameEngine = new GameEngine(gameId, context);
+                //
+                // // Start the game with the default settings
+                // gameEngine.StartGame();
                 string settingsFilePath = Path.Combine(relativePathToProjectRoot, "settings_info.json");
                 var gameEngine = new GameEngine(settingsFilePath);
 
@@ -223,44 +228,43 @@ using (var context = new AppDbContext(contextOptions))
                 Console.Write("Do you want to save these customizations for future use? (yes/no): ");
                 var saveForFuture = Console.ReadLine()?.Trim().ToLower() ?? "no";
 
-                string customSettingsFilePath;
-                var settingsManager = new SettingsFileManager(relativePathToProjectRoot);
-                var targetSettingsFilePath = Path.Combine(relativePathToProjectRoot, "settings_info.json");
+                // Create a new game record
+                var settingsService = new GameSettingsService(context);
+                int gameId = settingsService.CreateNewGame(null); // Filename is null initially
 
                 if (saveForFuture == "yes")
                 {
                     Console.Write("Enter the name for the settings file (without extension): ");
                     var customSettingsFile = Console.ReadLine()?.Trim() ?? "custom_settings";
-                    customSettingsFilePath = Path.Combine(relativePathToProjectRoot,
-                        customSettingsFile + ".json");
-
-                    if (!File.Exists(customSettingsFilePath))
-                        settingsManager.CopyContentsToSettingsInfo(
-                            Path.Combine(relativePathToProjectRoot, "default_settings.json"),
-                            customSettingsFilePath);
-
-                    // Set the custom settings file as the one to use for this session.
-                    ApplicationState.SettingsFileName = customSettingsFilePath;
+                    ApplicationState.SettingsFileName = customSettingsFile;
+                    // Customization logic
                     kindofSettingsToCustomizeStartGame.Run();
 
-                    settingsManager.CopyContentsToSettingsInfo(customSettingsFilePath, targetSettingsFilePath);
+                    // Update the game record with the new settings filename
+                    settingsService.UpdateGameFileName(gameId, customSettingsFile);
                 }
                 else
                 {
-                    var defaultSettingsFilePath = Path.Combine(relativePathToProjectRoot, "default_settings.json");
-                    settingsManager.CopyContentsToSettingsInfo(defaultSettingsFilePath, targetSettingsFilePath);
-
-                    // Set 'settings_info.json' as the file to use for this session.
-                    ApplicationState.SettingsFileName = targetSettingsFilePath;
+                    // Customization logic
+                    ApplicationState.SettingsFileName = "settings_info";
                     kindofSettingsToCustomizeStartGame.Run();
+                    settingsService = new GameSettingsService(context);
+                    // Use a temporary file name to identify this game's settings
+                    settingsService.UpdateGameFileName(gameId, "settings_info");
                 }
 
+                // Start the game with the customized settings
+                // var gameEngine = new GameEngine(gameId, context);
                 string settingsFilePath = Path.Combine(relativePathToProjectRoot, "settings_info.json");
                 var gameEngine = new GameEngine(settingsFilePath);
-
-                // Start the game
                 gameEngine.StartGame();
                 mainMenu.Run();
+
+                if (saveForFuture != "yes")
+                {
+                    // Cleanup settings for "settings_info" if they were not meant to be saved
+                    settingsService.CleanupTemporarySettings("settings_info");
+                }
 
                 return null;
             }
@@ -271,13 +275,19 @@ using (var context = new AppDbContext(contextOptions))
             MenuLabel = "Use pre-saved settings",
             MethodToRun = () =>
             {
-                var settingsManager = new SettingsFileManager(relativePathToProjectRoot);
-                settingsManager.PromptAndCopySettings(false);
+                var settingsService = new GameSettingsService(context);
+                // Prompt user for the filename of pre-saved settings
+                var preSavedSettingsFileName = settingsService.PromptForPreSavedSettings();
 
+                // Create a new game record and apply pre-saved settings
+                settingsService = new GameSettingsService(context);
+                int gameId = settingsService.CreateNewGame(preSavedSettingsFileName);
+                settingsService.ApplyPreSavedSettings(preSavedSettingsFileName, gameId);
+
+                // Start the game with the pre-saved settings
+                // var gameEngine = new GameEngine(gameId, context);
                 string settingsFilePath = Path.Combine(relativePathToProjectRoot, "settings_info.json");
                 var gameEngine = new GameEngine(settingsFilePath);
-
-                // Start the game
                 gameEngine.StartGame();
                 mainMenu.Run();
 

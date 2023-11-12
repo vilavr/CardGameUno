@@ -45,52 +45,81 @@ public class GameSettingsCustomization<T>
         return userInput;
     }
 
-    public void UpdateSetting(T value, string settingsFileName, AppDbContext context)
+    public void UpdateSetting(T value, string settingsFileName, int? gameId, AppDbContext context)
     {
-        // Check if any settings exist for the given FileName
-        var settingsExist = context.GameSettings.Any(gs => gs.FileName == settingsFileName);
+        // Begin transaction for atomic operation
+        using var transaction = context.Database.BeginTransaction();
 
-        if (!settingsExist)
+        try
         {
-            // If settings do not exist, create a copy of all default entries with the new FileName
-            var defaultSettings = context.GameSettings
-                .Where(gs => gs.FileName == "Default")
-                .ToList();
+            // Console.WriteLine($"Checking existence of settings for file: {settingsFileName}");
 
-            foreach (var Setting in defaultSettings)
+            var settingsExist = context.GameSettings.Any(gs => gs.FileName == settingsFileName);
+
+            if (!settingsExist)
             {
-                context.GameSettings.Add(new GameSetting
+                // Console.WriteLine($"No settings found for {settingsFileName}, creating with default settings...");
+
+                var defaultSettings = context.GameSettings
+                    .Where(gs => gs.FileName == "Default")
+                    .ToList();
+
+                if (!defaultSettings.Any())
                 {
-                    FileName = settingsFileName,
-                    SettingName = Setting.SettingName,
-                    SettingValue = Setting.SettingValue
-                });
+                    // Console.WriteLine("No default settings found to copy.");
+                }
+                else
+                {
+                    foreach (var setting in defaultSettings)
+                    {
+                        var newSetting = new GameSetting
+                        {
+                            GameId = gameId,
+                            FileName = settingsFileName,
+                            SettingName = setting.SettingName,
+                            SettingValue = setting.SettingValue
+                        };
+                        context.GameSettings.Add(newSetting);
+                        // Console.WriteLine($"Adding setting {setting.SettingName} for file {settingsFileName}.");
+                    }
+
+                    int createdCount = context.SaveChanges();
+                    // Console.WriteLine($"{createdCount} settings created for {settingsFileName}.");
+                }
             }
 
-            context.SaveChanges();
-            Console.WriteLine($"A new settings file has been created based on the default settings: {settingsFileName}");
-        }
+            var settingToUpdate = context.GameSettings
+                .FirstOrDefault(gs => gs.FileName == settingsFileName && gs.SettingName == Key);
 
-        // Retrieve the specific setting to update or create a new one if it doesn't exist
-        var setting = context.GameSettings
-            .SingleOrDefault(gs => gs.FileName == settingsFileName && gs.SettingName == Key);
-
-        if (setting != null)
-        {
-            // Update the existing setting
-            setting.SettingValue = value!.ToString();
-        }
-        else
-        {
-            // Add a new setting if it does not exist
-            context.GameSettings.Add(new GameSetting
+            if (settingToUpdate != null)
             {
-                FileName = settingsFileName,
-                SettingName = Key,
-                SettingValue = value!.ToString()
-            });
+                // Console.WriteLine($"Found existing setting for {Key}, updating value...");
+                settingToUpdate.SettingValue = value!.ToString();
+            }
+            else
+            {
+                // Console.WriteLine($"No existing setting found for {Key}, adding new setting...");
+                var newSetting = new GameSetting
+                {
+                    GameId = gameId,
+                    FileName = settingsFileName,
+                    SettingName = Key,
+                    SettingValue = value!.ToString()
+                };
+                context.GameSettings.Add(newSetting);
+            }
+
+            int changesSaved = context.SaveChanges();
+            Console.WriteLine($"{changesSaved} changes saved to settings for {settingsFileName}.");
+
+            // Commit transaction
+            transaction.Commit();
         }
-        context.SaveChanges();
-        Console.WriteLine($"Setting '{Key}' updated to: {value} for file: {settingsFileName}");
+        catch (Exception ex)
+        {
+            // Rollback transaction on error
+            transaction.Rollback();
+            Console.WriteLine($"An error occurred: {ex.Message}");
+        }
     }
 }

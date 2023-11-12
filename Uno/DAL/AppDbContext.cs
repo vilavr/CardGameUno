@@ -21,9 +21,9 @@ public class AppDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
-        // Unique constraint for GameSetting.FileName
+        // for one game there should be one file with unique settings
         modelBuilder.Entity<GameSetting>()
-            .HasIndex(gs => new { gs.FileName, gs.SettingName })
+            .HasIndex(gs => new { gs.FileName, gs.SettingName, gs.GameId })
             .IsUnique();
 
         // Unique constraint for Player.PlayerNickname
@@ -58,12 +58,6 @@ public class AppDbContext : DbContext
             .HasOne(gc => gc.Card)
             .WithMany(c => c.GameCards)
             .HasForeignKey(gc => gc.CardId);
-
-        // Configuring one-to-many relationship between Game and GameSetting
-        modelBuilder.Entity<GameSetting>()
-            .HasOne(gs => gs.Game)
-            .WithMany(g => g.GameSettings)
-            .HasForeignKey(gs => gs.GameId);
 
         // Configuring one-to-one relationship between Game and TopCard
         modelBuilder.Entity<Game>()

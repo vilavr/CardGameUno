@@ -1,5 +1,3 @@
-using Microsoft.EntityFrameworkCore;
-
 namespace Domain.Database;
 
 using System.Collections.Generic;
@@ -13,20 +11,18 @@ public class Game
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int Id { get; set; }
 
-    [MaxLength(255)] 
+    [MaxLength(255)]
     [Column(TypeName = "nvarchar(255)")]
-    public string? GameFile { get; set; } // Can be null if the game hasn't been saved yet
+    public string? SettingsFileName { get; set; } // Stores the setting file name
 
-    // Relationships
-    public required List<Player> Players { get; set; }
-    public required List<GameCard> GameCards { get; set; }
-    // Navigation property for the one-to-many relationship with GameSetting
-    public required List<GameSetting> GameSettings { get; set; }
+    // All other properties are nullable and null by default
+    public List<Player>? Players { get; set; }
+    public List<GameCard>? GameCards { get; set; }
     
-    public int TopCardId { get; set; }
-    public required Card TopCard { get; set; }
+    public int? TopCardId { get; set; }
+    public Card? TopCard { get; set; }
 
-    public bool SpecialCardEffectApplied { get; set; }
-    public int CurrentPlayerTurn { get; set; }
-    public int CurrentRound { get; set; }
+    public bool? SpecialCardEffectApplied { get; set; }
+    public int? CurrentPlayerTurn { get; set; }
+    public int? CurrentRound { get; set; }
 }
