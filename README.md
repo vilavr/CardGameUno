@@ -12,25 +12,14 @@
 Official rules used to create this game:
 https://www.unorules.com/
 
-## Features to Add
+## Gameplay Features
 
-Functionality that I haven't time to implement yet, but will do in future
+1) Complete Gameplay Implementation: Enjoy the full Uno experience, including challenging AI opponents or human players in a virtual setup.
 
-1. **Wild Shuffle Hands cards in deck**: you have to shuffle all your hand into the deck and take new cards from it (has to be updated in card settings and player action: execute move)
-2. **Uno declaration**: typing in "uno" if you have 1 card left (if not done is punished by drawing 2 cards), prompt in player action: HumanTakeTurn method
+2) Special Card Effects: Experience the game-changing impact of special cards like Reverse, Skip, and Wild cards, all programmed to reflect their unique effects in the game.
 
+3) Custom Cards: Customize your game with unique cards, allowing for a personalized Uno experience.
 
-## Known Bugs to Fix
+4) AI Players: Compete against AI players equipped with strategic logic, making your solo gameplay challenging and fun.
 
-Bugs I know exist and will fix, please if you notice any more bugs add them here!
-
-1. **Displaying correct json files to load settings/game from**: all user saved json files are in one directory and all its content is displayed when the user wants to load game or use pre-saved settings. Obviously, these two kinds of files have different structure and aren't interchangeable. I'll add filtering of their structure and change the allowed lists of files to load game/settings from
-2. **Handling first top card that has special effects**: Currently Reverse, Skip etc and Wild cards are treated as regular ones, so their effects aren't taken into accounts. I'll have to add these checks in game play (most probably in player action: take turn). Also, I'm not sure if Wild Draw Four card and other special cards are allowed to be the first ones (probably they should be reshuffled into the deck)
-
-
-## Repository problems I don't know how to fix :(
-
-1. **Gitignore**: in my local branch I have the full gitignore. However, it doesn't get pushed to git even when I change it. That's why the repo is flooded with unnecessary files (upd: fixed)
-2. **Making separate class libraries**: when I tried to create new class libraries, the referencing didn't work (I tried both adding them through terminal, editing .csproj files and context actions). Now all my 15+ classes are in one library and I don't really know how to refactor that (upd: cannot be fixed straightaway because of cross-referencing)
-3. **Json files paths**: I use them a lot and all of them are in Resources directory on solution level. However, if I reference them with solution level paths (/Uno/Resources/file.json) I get exception "file not found", because C# tries to search for this directory in /Bin/Debug directory. That's why I have all paths as absolute ones and the project won't work on any computer except mine :') I would love to get help with fixing this (upd: fixed)
-
+5) Multiplayer Functionality: Connect and play with friends in an engaging multiplayer setup, bringing the competitive spirit of Uno to your screen.
