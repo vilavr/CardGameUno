@@ -1,12 +1,5 @@
 # Uno Game
 
-
-## Student Information
-
-- **Name**: Vira Lavrova
-- **Email**: vilavr@taltech.ee
-- **Student Code**: 223682IVSB
-
 ## Introduction
 
 Official rules used to create this game:
